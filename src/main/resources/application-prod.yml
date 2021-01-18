@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    hikari:
+      jdbc-url: jdbc:mysql://47.105.221.99:3306/conference_platform?useUnicode=true&characterEncoding=utf8&useSSL=false
+      username: fensibox
+      password: fensibox123
+      driver-class-name: com.mysql.jdbc.Driver
+      minimum-idle: 5
+      maximum-pool-size: 100
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: cotenant-hikari
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  redis:
+    host: 47.105.221.99
+    password: Xiaoyouhezu_123
+qiniu:
+  access-key: JfvKpmCZqfM2nzKXP49Bhe3LUIo1nX_9UneS3EL0
+  secret-key: JFBrCeLMSeMvkzQUQ-Jr5RbZoX7PzSEiFvyMxuOG
+  bucket: xiaoyouhezu-prod
+  bucket-url: upload.xiaoyouhezu.com

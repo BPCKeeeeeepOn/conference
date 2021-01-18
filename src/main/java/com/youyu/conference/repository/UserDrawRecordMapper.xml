@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.conference.repository.UserDrawRecordMapper">
+  <resultMap id="BaseResultMap" type="com.youyu.conference.entity.UserDrawRecord">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="draw_type" jdbcType="INTEGER" property="drawType" />
+    <result column="draw_round" jdbcType="INTEGER" property="drawRound" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, user_id, draw_type, draw_round, created_time, updated_time, is_deleted
+  </sql>
+  <select id="selectByExample" parameterType="com.youyu.conference.entity.UserDrawRecordExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from user_draw_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user_draw_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from user_draw_record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.youyu.conference.entity.UserDrawRecordExample">
+    delete from user_draw_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.youyu.conference.entity.UserDrawRecord">
+    insert into user_draw_record (id, user_id, draw_type, 
+      draw_round, created_time, updated_time, 
+      is_deleted)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{drawType,jdbcType=INTEGER}, 
+      #{drawRound,jdbcType=INTEGER}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, 
+      #{isDeleted,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.youyu.conference.entity.UserDrawRecord">
+    insert into user_draw_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="drawType != null">
+        draw_type,
+      </if>
+      <if test="drawRound != null">
+        draw_round,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+      <if test="updatedTime != null">
+        updated_time,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="drawType != null">
+        #{drawType,jdbcType=INTEGER},
+      </if>
+      <if test="drawRound != null">
+        #{drawRound,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null">
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.youyu.conference.entity.UserDrawRecordExample" resultType="java.lang.Long">
+    select count(*) from user_draw_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update user_draw_record
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=BIGINT},
+      </if>
+      <if test="record.drawType != null">
+        draw_type = #{record.drawType,jdbcType=INTEGER},
+      </if>
+      <if test="record.drawRound != null">
+        draw_round = #{record.drawRound,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdTime != null">
+        created_time = #{record.createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedTime != null">
+        updated_time = #{record.updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isDeleted != null">
+        is_deleted = #{record.isDeleted,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update user_draw_record
+    set id = #{record.id,jdbcType=BIGINT},
+      user_id = #{record.userId,jdbcType=BIGINT},
+      draw_type = #{record.drawType,jdbcType=INTEGER},
+      draw_round = #{record.drawRound,jdbcType=INTEGER},
+      created_time = #{record.createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{record.updatedTime,jdbcType=TIMESTAMP},
+      is_deleted = #{record.isDeleted,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.youyu.conference.entity.UserDrawRecord">
+    update user_draw_record
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="drawType != null">
+        draw_type = #{drawType,jdbcType=INTEGER},
+      </if>
+      <if test="drawRound != null">
+        draw_round = #{drawRound,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null">
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.youyu.conference.entity.UserDrawRecord">
+    update user_draw_record
+    set user_id = #{userId,jdbcType=BIGINT},
+      draw_type = #{drawType,jdbcType=INTEGER},
+      draw_round = #{drawRound,jdbcType=INTEGER},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

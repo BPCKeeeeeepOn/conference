@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.conference.repository.CustomUserMapper">
+  <resultMap id="BaseResultMap" type="com.youyu.conference.entity.CustomUser">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="user_number" jdbcType="VARCHAR" property="userNumber" />
+    <result column="user_city" jdbcType="VARCHAR" property="userCity" />
+    <result column="user_country" jdbcType="INTEGER" property="userCountry" />
+    <result column="enabled" jdbcType="BIT" property="enabled" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, user_name, user_number, user_city, user_country, enabled, created_time, updated_time, 
+    is_deleted
+  </sql>
+  <select id="selectByExample" parameterType="com.youyu.conference.entity.CustomUserExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from custom_user
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from custom_user
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from custom_user
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.youyu.conference.entity.CustomUserExample">
+    delete from custom_user
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.youyu.conference.entity.CustomUser">
+    insert into custom_user (id, user_name, user_number, 
+      user_city, user_country, enabled, 
+      created_time, updated_time, is_deleted
+      )
+    values (#{id,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{userNumber,jdbcType=VARCHAR}, 
+      #{userCity,jdbcType=VARCHAR}, #{userCountry,jdbcType=INTEGER}, #{enabled,jdbcType=BIT}, 
+      #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.youyu.conference.entity.CustomUser">
+    insert into custom_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="userNumber != null">
+        user_number,
+      </if>
+      <if test="userCity != null">
+        user_city,
+      </if>
+      <if test="userCountry != null">
+        user_country,
+      </if>
+      <if test="enabled != null">
+        enabled,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+      <if test="updatedTime != null">
+        updated_time,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userNumber != null">
+        #{userNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="userCity != null">
+        #{userCity,jdbcType=VARCHAR},
+      </if>
+      <if test="userCountry != null">
+        #{userCountry,jdbcType=INTEGER},
+      </if>
+      <if test="enabled != null">
+        #{enabled,jdbcType=BIT},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null">
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.youyu.conference.entity.CustomUserExample" resultType="java.lang.Long">
+    select count(*) from custom_user
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update custom_user
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.userName != null">
+        user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userNumber != null">
+        user_number = #{record.userNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userCity != null">
+        user_city = #{record.userCity,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userCountry != null">
+        user_country = #{record.userCountry,jdbcType=INTEGER},
+      </if>
+      <if test="record.enabled != null">
+        enabled = #{record.enabled,jdbcType=BIT},
+      </if>
+      <if test="record.createdTime != null">
+        created_time = #{record.createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedTime != null">
+        updated_time = #{record.updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isDeleted != null">
+        is_deleted = #{record.isDeleted,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update custom_user
+    set id = #{record.id,jdbcType=BIGINT},
+      user_name = #{record.userName,jdbcType=VARCHAR},
+      user_number = #{record.userNumber,jdbcType=VARCHAR},
+      user_city = #{record.userCity,jdbcType=VARCHAR},
+      user_country = #{record.userCountry,jdbcType=INTEGER},
+      enabled = #{record.enabled,jdbcType=BIT},
+      created_time = #{record.createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{record.updatedTime,jdbcType=TIMESTAMP},
+      is_deleted = #{record.isDeleted,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.youyu.conference.entity.CustomUser">
+    update custom_user
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userNumber != null">
+        user_number = #{userNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="userCity != null">
+        user_city = #{userCity,jdbcType=VARCHAR},
+      </if>
+      <if test="userCountry != null">
+        user_country = #{userCountry,jdbcType=INTEGER},
+      </if>
+      <if test="enabled != null">
+        enabled = #{enabled,jdbcType=BIT},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null">
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.youyu.conference.entity.CustomUser">
+    update custom_user
+    set user_name = #{userName,jdbcType=VARCHAR},
+      user_number = #{userNumber,jdbcType=VARCHAR},
+      user_city = #{userCity,jdbcType=VARCHAR},
+      user_country = #{userCountry,jdbcType=INTEGER},
+      enabled = #{enabled,jdbcType=BIT},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

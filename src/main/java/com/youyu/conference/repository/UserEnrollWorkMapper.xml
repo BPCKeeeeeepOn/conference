@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.conference.repository.UserEnrollWorkMapper">
+  <resultMap id="BaseResultMap" type="com.youyu.conference.entity.UserEnrollWork">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="work_url" jdbcType="VARCHAR" property="workUrl" />
+    <result column="work_head_img" jdbcType="VARCHAR" property="workHeadImg" />
+    <result column="work_desc" jdbcType="VARCHAR" property="workDesc" />
+    <result column="work_type" jdbcType="INTEGER" property="workType" />
+    <result column="work_pv" jdbcType="INTEGER" property="workPv" />
+    <result column="work_like" jdbcType="INTEGER" property="workLike" />
+    <result column="work_status" jdbcType="INTEGER" property="workStatus" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, user_id, work_url, work_head_img, work_desc, work_type, work_pv, work_like, work_status, 
+    created_time, updated_time, is_deleted
+  </sql>
+  <select id="selectByExample" parameterType="com.youyu.conference.entity.UserEnrollWorkExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from user_enroll_work
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user_enroll_work
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from user_enroll_work
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.youyu.conference.entity.UserEnrollWorkExample">
+    delete from user_enroll_work
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.youyu.conference.entity.UserEnrollWork">
+    insert into user_enroll_work (id, user_id, work_url, 
+      work_head_img, work_desc, work_type, 
+      work_pv, work_like, work_status, 
+      created_time, updated_time, is_deleted
+      )
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{workUrl,jdbcType=VARCHAR}, 
+      #{workHeadImg,jdbcType=VARCHAR}, #{workDesc,jdbcType=VARCHAR}, #{workType,jdbcType=INTEGER}, 
+      #{workPv,jdbcType=INTEGER}, #{workLike,jdbcType=INTEGER}, #{workStatus,jdbcType=INTEGER}, 
+      #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.youyu.conference.entity.UserEnrollWork">
+    insert into user_enroll_work
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="workUrl != null">
+        work_url,
+      </if>
+      <if test="workHeadImg != null">
+        work_head_img,
+      </if>
+      <if test="workDesc != null">
+        work_desc,
+      </if>
+      <if test="workType != null">
+        work_type,
+      </if>
+      <if test="workPv != null">
+        work_pv,
+      </if>
+      <if test="workLike != null">
+        work_like,
+      </if>
+      <if test="workStatus != null">
+        work_status,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+      <if test="updatedTime != null">
+        updated_time,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="workUrl != null">
+        #{workUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="workHeadImg != null">
+        #{workHeadImg,jdbcType=VARCHAR},
+      </if>
+      <if test="workDesc != null">
+        #{workDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="workType != null">
+        #{workType,jdbcType=INTEGER},
+      </if>
+      <if test="workPv != null">
+        #{workPv,jdbcType=INTEGER},
+      </if>
+      <if test="workLike != null">
+        #{workLike,jdbcType=INTEGER},
+      </if>
+      <if test="workStatus != null">
+        #{workStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null">
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.youyu.conference.entity.UserEnrollWorkExample" resultType="java.lang.Long">
+    select count(*) from user_enroll_work
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update user_enroll_work
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=BIGINT},
+      </if>
+      <if test="record.workUrl != null">
+        work_url = #{record.workUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.workHeadImg != null">
+        work_head_img = #{record.workHeadImg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.workDesc != null">
+        work_desc = #{record.workDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.workType != null">
+        work_type = #{record.workType,jdbcType=INTEGER},
+      </if>
+      <if test="record.workPv != null">
+        work_pv = #{record.workPv,jdbcType=INTEGER},
+      </if>
+      <if test="record.workLike != null">
+        work_like = #{record.workLike,jdbcType=INTEGER},
+      </if>
+      <if test="record.workStatus != null">
+        work_status = #{record.workStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdTime != null">
+        created_time = #{record.createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatedTime != null">
+        updated_time = #{record.updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isDeleted != null">
+        is_deleted = #{record.isDeleted,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update user_enroll_work
+    set id = #{record.id,jdbcType=BIGINT},
+      user_id = #{record.userId,jdbcType=BIGINT},
+      work_url = #{record.workUrl,jdbcType=VARCHAR},
+      work_head_img = #{record.workHeadImg,jdbcType=VARCHAR},
+      work_desc = #{record.workDesc,jdbcType=VARCHAR},
+      work_type = #{record.workType,jdbcType=INTEGER},
+      work_pv = #{record.workPv,jdbcType=INTEGER},
+      work_like = #{record.workLike,jdbcType=INTEGER},
+      work_status = #{record.workStatus,jdbcType=INTEGER},
+      created_time = #{record.createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{record.updatedTime,jdbcType=TIMESTAMP},
+      is_deleted = #{record.isDeleted,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.youyu.conference.entity.UserEnrollWork">
+    update user_enroll_work
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="workUrl != null">
+        work_url = #{workUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="workHeadImg != null">
+        work_head_img = #{workHeadImg,jdbcType=VARCHAR},
+      </if>
+      <if test="workDesc != null">
+        work_desc = #{workDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="workType != null">
+        work_type = #{workType,jdbcType=INTEGER},
+      </if>
+      <if test="workPv != null">
+        work_pv = #{workPv,jdbcType=INTEGER},
+      </if>
+      <if test="workLike != null">
+        work_like = #{workLike,jdbcType=INTEGER},
+      </if>
+      <if test="workStatus != null">
+        work_status = #{workStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedTime != null">
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.youyu.conference.entity.UserEnrollWork">
+    update user_enroll_work
+    set user_id = #{userId,jdbcType=BIGINT},
+      work_url = #{workUrl,jdbcType=VARCHAR},
+      work_head_img = #{workHeadImg,jdbcType=VARCHAR},
+      work_desc = #{workDesc,jdbcType=VARCHAR},
+      work_type = #{workType,jdbcType=INTEGER},
+      work_pv = #{workPv,jdbcType=INTEGER},
+      work_like = #{workLike,jdbcType=INTEGER},
+      work_status = #{workStatus,jdbcType=INTEGER},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

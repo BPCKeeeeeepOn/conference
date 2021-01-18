@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youyu.conference.repository.biz.ActivityUserBizMapper">
+    <resultMap id="UserInfoVM" type="com.youyu.conference.web.vm.UserInfoVM">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_number" jdbcType="VARCHAR" property="userNumber"/>
+        <result column="user_city" jdbcType="VARCHAR" property="userCity"/>
+        <result column="user_country" jdbcType="INTEGER" property="userCountry"/>
+        <result column="work_status" jdbcType="INTEGER" property="workStatus"/>
+        <result column="vote_count" jdbcType="INTEGER" property="voteCount"/>
+    </resultMap>
+    <resultMap id="ScoreBillboardVM" type="com.youyu.conference.web.vm.ScoreBillboardVM">
+        <id column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_number" jdbcType="VARCHAR" property="userNumber"/>
+        <result column="score" jdbcType="INTEGER" property="score"/>
+        <result column="rownum" jdbcType="INTEGER" property="rownum"/>
+    </resultMap>
+
+    <select id="selectUserInfo" resultMap="UserInfoVM">
+        SELECT cu.id, user_name, user_number, user_city, user_country
+            , IFNULL(uew.work_status,30) AS work_status,
+            (2-(SELECT COUNT(1) FROM user_enroll_work_event uewe WHERE uewe.send_user_id = cu.id AND uewe.event_type = 3)) AS vote_count
+        FROM custom_user cu
+            LEFT JOIN user_enroll_work uew
+            ON cu.id = uew.user_id
+                AND uew.work_type = 1
+                WHERE cu.id = #{userId}
+    </select>
+
+    <select id="selectScoreBillboard" resultMap="ScoreBillboardVM">
+        SELECT t2.user_id,t2.user_name,t2.user_number,t2.score,t2.rownum
+        FROM (
+            SELECT t1.*, @rownum := @rownum + 1 AS rownum
+            FROM (
+                SELECT @rownum := 0
+            ) r, (
+                    SELECT id as user_id, user_name, user_number
+                        , IFNULL(score, 0) AS score
+                    FROM custom_user
+                        LEFT JOIN (
+                            SELECT user_id, sum(score) AS score
+                            FROM user_score_record
+                            GROUP BY user_id
+                        ) socre_billboard
+                        ON custom_user.id = socre_billboard.user_id
+                    ORDER BY socre_billboard.score DESC,custom_user.id ASC
+                ) t1
+        ) t2
+    </select>
+
+</mapper>
