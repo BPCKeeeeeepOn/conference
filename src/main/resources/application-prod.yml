@@ -16,8 +16,3 @@ spring:
   redis:
     host: 47.105.221.99
     password: Xiaoyouhezu_123
-qiniu:
-  access-key: JfvKpmCZqfM2nzKXP49Bhe3LUIo1nX_9UneS3EL0
-  secret-key: JFBrCeLMSeMvkzQUQ-Jr5RbZoX7PzSEiFvyMxuOG
-  bucket: xiaoyouhezu-prod
-  bucket-url: upload.xiaoyouhezu.com

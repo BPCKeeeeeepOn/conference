@@ -18,8 +18,3 @@ spring:
     password: Xiaoyouhezu_123
   thymeleaf:
     prefix: classpath:/templates/
-qiniu:
-  access-key: JfvKpmCZqfM2nzKXP49Bhe3LUIo1nX_9UneS3EL0
-  secret-key: JFBrCeLMSeMvkzQUQ-Jr5RbZoX7PzSEiFvyMxuOG
-  bucket: xiaoyouhezu-prod
-  bucket-url: upload.xiaoyouhezu.com
