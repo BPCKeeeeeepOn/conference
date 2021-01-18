@@ -20,7 +20,7 @@ public class RedisUtils {
     @Resource
     private RedisTemplate redisTemplate;
 
-    final String KEY = "cotenant_";
+    final String KEY = "conference_";
 
     /**
      * 添加缓存

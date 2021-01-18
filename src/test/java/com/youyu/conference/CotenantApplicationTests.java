@@ -1,4 +1,4 @@
-package com.youyu.cotenant;
+package com.youyu.conference;
 
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

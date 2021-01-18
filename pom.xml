@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.youyu</groupId>
-    <artifactId>cotenant</artifactId>
+    <artifactId>conference</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>cotenant</name>
-    <description>Demo project for Spring Boot</description>
+    <name>conference</name>
+    <description>会议平台</description>
 
     <properties>
         <java.version>1.8</java.version>

@@ -1,4 +1,4 @@
-package com.youyu.cotenant.service;
+package com.youyu.conference.service;
 
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

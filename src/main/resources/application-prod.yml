@@ -9,7 +9,7 @@ spring:
       maximum-pool-size: 100
       auto-commit: true
       idle-timeout: 30000
-      pool-name: cotenant-hikari
+      pool-name: conference-hikari
       max-lifetime: 1800000
       connection-timeout: 30000
       connection-test-query: SELECT 1
