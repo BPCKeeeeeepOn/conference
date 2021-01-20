@@ -2,10 +2,8 @@ package com.youyu.conference.web.vm;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.youyu.conference.common.GeneratorID;
 import com.youyu.conference.entity.UserEnrollWork;
 import lombok.Data;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.BeanUtils;
 
 import javax.validation.constraints.Max;
@@ -18,7 +16,7 @@ import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYP
 
 @Data
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class WorkInVM {
+public class WorkEnrollInVM {
 
     @NotBlank(message = "作品链接不能为空")
     private String workUrl;

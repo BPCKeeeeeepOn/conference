@@ -31,40 +31,21 @@ public interface ConferenceConstants {
     }
 
     interface PRIZE_TYPE {
-        int PRIZE_REDPACK = 1;
-        int PRIZE_COUPON = 2;
+        int PRIZE_REDPACK = 1; //红包
+        int PRIZE_COUPON = 2; //优惠券
     }
 
     interface WORK_TYPE {
-        int WORK_TYPE_1 = 1;
-        int WORK_TYPE_2 = 2;
+        int WORK_TYPE_1 = 1; //家的味道
+        int WORK_TYPE_2 = 2; //精彩瞬间
         Set<Integer> WORK_TYPE_DISC = Stream.of(WORK_TYPE_1, WORK_TYPE_2).collect(Collectors.toSet());
     }
 
-    enum UnreadActionType {
-        MESSAGE(1),
-        CART(2);
+    interface EVENT_TYPE {
+        int EVENT_TYPE_1 = 1; //阅读
+        int EVENT_TYPE_2 = 2; //点赞
+        int EVENT_TYPE_3 = 3; //投票
+        Set<Integer> EVENT_TYPE_DISC = Stream.of(EVENT_TYPE_1, EVENT_TYPE_2, EVENT_TYPE_3).collect(Collectors.toSet());
 
-        int code;
-
-        UnreadActionType(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return this.code;
-        }
     }
-
-    String UNREAD_GROUP_KEY = "unread_message_key_";
-
-    String UNREAD_MSG_COUNT = "unread_msg_count";
-
-    /**
-     * 即时通讯发送内容key
-     */
-    String CHAT_RECEIVE_KEY = "chat_receive_key_";
-
-    String DOWNLOAD_URL = "https://service.dcloud.net.cn/build/download/f4187b60-24af-11ea-b536-91ba8bd01347";
-
 }

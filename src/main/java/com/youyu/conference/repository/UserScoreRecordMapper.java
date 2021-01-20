@@ -4,7 +4,9 @@ import com.youyu.conference.entity.UserScoreRecord;
 import com.youyu.conference.entity.UserScoreRecordExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserScoreRecordMapper {
     long countByExample(UserScoreRecordExample example);
 

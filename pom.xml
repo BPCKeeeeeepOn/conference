@@ -73,7 +73,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.9</version>
+            <version>1.11</version>
         </dependency>
         <!-- 日志配置 -->
         <dependency>
@@ -118,17 +118,13 @@
             <artifactId>okhttp</artifactId>
             <version>3.9.1</version>
         </dependency>
+        <!-- 腾讯oss支持 -->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>5.6.34</version>
+        </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>goeasy</id>
-            <name>goeasy</name>
-            <url>
-                http://maven.goeasy.io/content/repositories/releases/
-            </url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>

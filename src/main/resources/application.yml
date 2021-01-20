@@ -15,3 +15,8 @@ spring:
         min-idle: 6
         max-wait: -1ms
     timeout: 60s
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true

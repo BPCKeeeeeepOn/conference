@@ -4,7 +4,9 @@ import com.youyu.conference.entity.UserPrizeRecord;
 import com.youyu.conference.entity.UserPrizeRecordExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserPrizeRecordMapper {
     long countByExample(UserPrizeRecordExample example);
 

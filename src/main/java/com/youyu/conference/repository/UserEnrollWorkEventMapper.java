@@ -4,7 +4,9 @@ import com.youyu.conference.entity.UserEnrollWorkEvent;
 import com.youyu.conference.entity.UserEnrollWorkEventExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserEnrollWorkEventMapper {
     long countByExample(UserEnrollWorkEventExample example);
 
