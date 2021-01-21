@@ -3,8 +3,6 @@ server:
 spring:
   application:
     name: conference
-  profiles:
-    active: dev
   redis:
     database: 0
     port: 6379

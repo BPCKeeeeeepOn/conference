@@ -1,5 +1,7 @@
 package com.youyu.conference.web.vm;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jdk.nashorn.internal.objects.annotations.Getter;
@@ -14,6 +16,7 @@ import static com.youyu.conference.common.ConferenceConstants.PRIZE_TYPE.PRIZE_C
 import static com.youyu.conference.common.ConferenceConstants.PRIZE_TYPE.PRIZE_REDPACK;
 
 @Data
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UserInfoVM {
 
     @JsonSerialize(using = ToStringSerializer.class)
