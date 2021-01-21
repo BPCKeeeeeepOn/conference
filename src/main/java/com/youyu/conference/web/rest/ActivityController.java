@@ -14,6 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.youyu.conference.common.ConferenceConstants.DEFAULT_PAGE_OFFSET;
+import static com.youyu.conference.common.ConferenceConstants.DEFAULT_PAGE_SIZE;
+
 @RestController
 @RequestMapping("/activity")
 @Slf4j
@@ -38,8 +41,19 @@ public class ActivityController {
      * @return
      */
     @GetMapping("/billboard/score")
-    public ResponseResult getScoreBillboard() {
-        return ResponseResult.success().body(activityService.getScoreBillboard());
+    public ResponseResult getScoreBillboard(@RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_OFFSET) int offset,
+                                            @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_SIZE) int limit) {
+        return ResponseResult.success().body(activityService.getScoreBillboard(offset, limit));
+    }
+
+    /**
+     * 我的积分排行
+     *
+     * @return
+     */
+    @GetMapping("/billboard/myRound")
+    public ResponseResult getMyRound() {
+        return ResponseResult.success().body(activityService.getMyBillboard());
     }
 
     /**
@@ -49,8 +63,10 @@ public class ActivityController {
      * @return
      */
     @GetMapping("/work/list/{type}")
-    public ResponseResult listWork(@PathVariable("type") Integer type) {
-        return ResponseResult.success().body(activityService.getWorkList(type));
+    public ResponseResult listWork(@PathVariable("type") Integer type,
+                                   @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_OFFSET) int offset,
+                                   @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_SIZE) int limit) {
+        return ResponseResult.success().body(activityService.getWorkList(type, offset, limit));
     }
 
     /**

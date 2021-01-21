@@ -63,6 +63,27 @@
         ) t2
     </select>
 
+    <select id="selectMyBillboard" resultType="long">
+        SELECT t2.rownum
+        FROM (
+            SELECT t1.*, @rownum := @rownum + 1 AS rownum
+            FROM (
+                SELECT @rownum := 0
+            ) r, (
+                    SELECT id as user_id, user_name, user_number
+                        , IFNULL(score, 0) AS score
+                    FROM custom_user
+                        LEFT JOIN (
+                            SELECT user_id, sum(score) AS score
+                            FROM user_score_record
+                            GROUP BY user_id
+                        ) socre_billboard
+                        ON custom_user.id = socre_billboard.user_id
+                    ORDER BY socre_billboard.score DESC,custom_user.id ASC
+                ) t1
+        ) t2 WHERE t2.user_id = #{userId};
+    </select>
+
     <select id="selectWorkList" resultMap="WorkListOutVM">
         SELECT t1.id, t1.user_id, t1.work_url, t1.work_head_img, t1.work_desc
         , t1.work_type, t2.user_name, t1.created_time,

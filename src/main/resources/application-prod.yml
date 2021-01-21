@@ -14,5 +14,5 @@ spring:
       connection-timeout: 30000
       connection-test-query: SELECT 1
   redis:
-    host: 47.105.221.99
+    host: 127.0.0.1
     password: Xiaoyouhezu_123

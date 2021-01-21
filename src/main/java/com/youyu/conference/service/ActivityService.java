@@ -1,5 +1,6 @@
 package com.youyu.conference.service;
 
+import com.github.pagehelper.PageHelper;
 import com.youyu.conference.common.GeneratorID;
 import com.youyu.conference.common.ResponseResult;
 import com.youyu.conference.common.ResultCode;
@@ -76,18 +77,26 @@ public class ActivityService {
      *
      * @return
      */
-    public Map<String, Object> getScoreBillboard() {
-        Map<String, Object> result = new HashMap<>();
-        long currUserId = currentUserUtils.getCurrUserId();
+    public List<ScoreBillboardVM> getScoreBillboard(Integer offset, Integer limit) {
+        PageHelper.offsetPage(offset, limit);
         List<ScoreBillboardVM> scoreList = activityUserBizMapper.selectScoreBillboard();
-        if (!CollectionUtils.isEmpty(scoreList)) {
+        return scoreList;
+        /*if (!CollectionUtils.isEmpty(scoreList)) {
             List<Integer> collect = scoreList.stream().filter(item -> Objects.equals(currUserId, item.getUserId())).map(ScoreBillboardVM::getRownum).collect(Collectors.toList());
             Integer rank = collect.get(0);
             result.put("billboard", scoreList);
             result.put("current_rank", rank);
             return result;
         }
-        return null;
+        return null;*/
+    }
+
+    public Map<String, Long> getMyBillboard() {
+        long currUserId = currentUserUtils.getCurrUserId();
+        Long round = activityUserBizMapper.selectMyBillboard(currUserId);
+        return new HashMap<String, Long>() {{
+            put("round", round);
+        }};
     }
 
     /**
@@ -182,10 +191,11 @@ public class ActivityService {
      * @param type
      * @return
      */
-    public List<WorkEnrollListOutVM> getWorkList(Integer type) {
+    public List<WorkEnrollListOutVM> getWorkList(Integer type, Integer offset, Integer limit) {
         if (!EVENT_TYPE_DISC.contains(type)) {
             throw new BizException(ResponseResult.fail(ResultCode.PARAMS_ERROR));
         }
+        PageHelper.offsetPage(offset, limit);
         List<WorkEnrollListOutVM> result = activityUserBizMapper.selectWorkList(type);
         return result;
     }
@@ -196,6 +206,7 @@ public class ActivityService {
      * @param workId
      * @param event
      */
+    @Transactional("dataSourceTransactionManager")
     public void recordEventWork(Long workId, Integer event) {
         //检查作品信息
         UserEnrollWork userEnrollWork = userEnrollWorkMapper.selectByPrimaryKey(workId);

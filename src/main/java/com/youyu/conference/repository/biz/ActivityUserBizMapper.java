@@ -15,6 +15,8 @@ public interface ActivityUserBizMapper {
 
     List<ScoreBillboardVM> selectScoreBillboard();
 
+    Long selectMyBillboard(@Param("userId") Long userId);
+
     List<WorkEnrollListOutVM> selectWorkList(@Param("type") Integer type);
 
 }
