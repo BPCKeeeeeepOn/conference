@@ -23,4 +23,6 @@ public class WorkEnrollListOutVM extends WorkEnrollInVM {
     private Integer workLike;
 
     private Integer workVote;
+
+    private Integer workStatus; //审核状态
 }

@@ -1,9 +1,9 @@
 spring:
   datasource:
     hikari:
-      jdbc-url: jdbc:mysql://47.105.221.99:3306/conference_platform?useUnicode=true&characterEncoding=utf8&useSSL=false
-      username: fensibox
-      password: fensibox123
+      jdbc-url: jdbc:mysql://127.0.0.1:3306/conference?useUnicode=true&characterEncoding=utf8&useSSL=false
+      username: conference
+      password: BeBnGZFDP8FETmCz
       driver-class-name: com.mysql.jdbc.Driver
       minimum-idle: 5
       maximum-pool-size: 100
@@ -15,4 +15,3 @@ spring:
       connection-test-query: SELECT 1
   redis:
     host: 127.0.0.1
-    password: Xiaoyouhezu_123

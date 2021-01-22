@@ -28,7 +28,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.youyu.conference.common.ConferenceConstants.EVENT_TYPE.*;
+import static com.youyu.conference.common.ConferenceConstants.EVENT_TYPE.EVENT_TYPE_3;
+import static com.youyu.conference.common.ConferenceConstants.EVENT_TYPE.EVENT_TYPE_DISC;
 import static com.youyu.conference.common.ConferenceConstants.USER_STATUS.DEFAULT_STATUS;
 import static com.youyu.conference.common.ConferenceConstants.USER_STATUS.PASS_STATUS;
 import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYPE_1;
@@ -81,14 +82,6 @@ public class ActivityService {
         PageHelper.offsetPage(offset, limit);
         List<ScoreBillboardVM> scoreList = activityUserBizMapper.selectScoreBillboard();
         return scoreList;
-        /*if (!CollectionUtils.isEmpty(scoreList)) {
-            List<Integer> collect = scoreList.stream().filter(item -> Objects.equals(currUserId, item.getUserId())).map(ScoreBillboardVM::getRownum).collect(Collectors.toList());
-            Integer rank = collect.get(0);
-            result.put("billboard", scoreList);
-            result.put("current_rank", rank);
-            return result;
-        }
-        return null;*/
     }
 
     public Map<String, Long> getMyBillboard() {
