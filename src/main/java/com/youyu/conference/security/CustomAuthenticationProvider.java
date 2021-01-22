@@ -2,6 +2,7 @@ package com.youyu.conference.security;
 
 import com.youyu.conference.entity.CustomUser;
 import com.youyu.conference.jwt.JWTLoginUser;
+import com.youyu.conference.repository.CustomUserMapper;
 import com.youyu.conference.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,19 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CustomUserMapper customUserMapper;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String userNumber = authentication.getName();
         String userName = authentication.getCredentials().toString();
         CustomUser user = userService.selectUserByUserNumber(userNumber);
         if (Objects.nonNull(user) && StringUtils.equalsIgnoreCase(userName, user.getUserName())) {
+            if (!user.getLoginState()) { //更新用户登录状态
+                user.setLoginState(Boolean.TRUE);
+                customUserMapper.updateByPrimaryKeySelective(user);
+            }
             //这里设置权限和角色
             Collection<GrantedAuthority> authorities = obtionGrantedAuthorities(user);
             //生成令牌

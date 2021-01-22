@@ -21,8 +21,6 @@ public class WorkEnrollInVM {
     @NotBlank(message = "作品链接不能为空")
     private String workUrl;
 
-    private String workHeadImg;
-
     @NotBlank(message = "作品描述不能为空")
     @Size(max = 100, min = 1, message = "作品描述最大字符不能超过{max}")
     private String workDesc;

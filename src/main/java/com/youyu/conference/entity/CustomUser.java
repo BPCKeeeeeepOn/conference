@@ -16,6 +16,8 @@ public class CustomUser implements Serializable {
 
     private Boolean enabled;
 
+    private Boolean loginState;
+
     private LocalDateTime createdTime;
 
     private LocalDateTime updatedTime;
@@ -70,6 +72,14 @@ public class CustomUser implements Serializable {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Boolean getLoginState() {
+        return loginState;
+    }
+
+    public void setLoginState(Boolean loginState) {
+        this.loginState = loginState;
     }
 
     public LocalDateTime getCreatedTime() {

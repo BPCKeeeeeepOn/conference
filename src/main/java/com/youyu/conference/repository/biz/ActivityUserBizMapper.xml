@@ -9,6 +9,7 @@
         <result column="user_country" jdbcType="INTEGER" property="userCountry"/>
         <result column="work_status" jdbcType="INTEGER" property="workStatus"/>
         <result column="vote_count" jdbcType="INTEGER" property="voteCount"/>
+        <result column="score" jdbcType="INTEGER" property="score"/>
     </resultMap>
     <resultMap id="ScoreBillboardVM" type="com.youyu.conference.web.vm.ScoreBillboardVM">
         <id column="user_id" jdbcType="BIGINT" property="userId"/>
@@ -57,9 +58,9 @@
                             SELECT user_id, sum(score) AS score
                             FROM user_score_record
                             GROUP BY user_id
-                        ) socre_billboard
-                        ON custom_user.id = socre_billboard.user_id
-                    ORDER BY socre_billboard.score DESC,custom_user.id ASC
+                        ) score_billboard
+                        ON custom_user.id = score_billboard.user_id
+                    ORDER BY score_billboard.score DESC,custom_user.id ASC
                 ) t1
         ) t2
     </select>
@@ -78,9 +79,9 @@
                             SELECT user_id, sum(score) AS score
                             FROM user_score_record
                             GROUP BY user_id
-                        ) socre_billboard
-                        ON custom_user.id = socre_billboard.user_id
-                    ORDER BY socre_billboard.score DESC,custom_user.id ASC
+                        ) score_billboard
+                        ON custom_user.id = score_billboard.user_id
+                    ORDER BY score_billboard.score DESC,custom_user.id ASC
                 ) t1
         ) t2 WHERE t2.user_id = #{userId};
     </select>
@@ -94,11 +95,40 @@
         FROM user_enroll_work t1
         INNER JOIN custom_user t2 ON t1.user_id = t2.id
         WHERE t1.work_type = #{type}
+        AND t1.work_status = 10
         <if test="type == 1">
             order by work_vote desc
         </if>
         <if test="type == 2">
             order by t1.created_time desc
         </if>
+    </select>
+
+    <select id="selectUserList" resultMap="UserInfoVM">
+        SELECT cu.id, user_name, user_number, user_city, user_country
+        , IFNULL(uew.work_status,30) AS work_status,
+        (2-(SELECT COUNT(1) FROM user_enroll_work_event uewe WHERE uewe.send_user_id = cu.id AND uewe.event_type = 3))
+        AS vote_count,ifnull(t1.score,0) as score
+        FROM custom_user cu
+        LEFT JOIN (select sum(score) as score,user_id from user_score_record group by user_id) as t1
+        ON cu.id = t1.user_id
+        LEFT JOIN user_enroll_work uew
+        ON cu.id = uew.user_id
+        AND uew.work_type = 1
+        <where>
+            <if test="queryParams.userName != null and queryParams.userName != 0">
+                AND user_name = #{queryParams.userName}
+            </if>
+            <if test="queryParams.userNumber != null and queryParams.userNumber != 0">
+                AND user_number = #{queryParams.userNumber}
+            </if>
+            <if test="queryParams.userCity != null and queryParams.userCity != 0">
+                AND user_city = #{queryParams.userCity}
+            </if>
+            <if test="queryParams.state != null">
+                AND login_state = #{queryParams.state}
+            </if>
+        </where>
+        order by cu.created_time asc
     </select>
 </mapper>

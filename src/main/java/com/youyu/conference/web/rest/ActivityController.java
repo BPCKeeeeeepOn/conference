@@ -3,7 +3,10 @@ package com.youyu.conference.web.rest;
 import com.youyu.conference.common.ResponseResult;
 import com.youyu.conference.service.ActivityService;
 import com.youyu.conference.utils.CommonUtils;
+import com.youyu.conference.utils.CurrentUserUtils;
 import com.youyu.conference.web.vm.ScoreInVM;
+import com.youyu.conference.web.vm.UserInfoVM;
+import com.youyu.conference.web.vm.UserQueryParams;
 import com.youyu.conference.web.vm.WorkEnrollInVM;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.youyu.conference.common.ConferenceConstants.DEFAULT_PAGE_OFFSET;
@@ -24,6 +28,10 @@ public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private CurrentUserUtils currentUserUtils;
+
 
     /**
      * 获取用户信息
@@ -70,14 +78,14 @@ public class ActivityController {
     }
 
     /**
-     * 上传作品
+     * 获取作品key
      *
-     * @param file
+     * @param key
      * @return
      */
-    @PostMapping("/work/upload")
-    public ResponseResult uploadWork(@RequestParam("file") MultipartFile file) {
-        return ResponseResult.success().body(CommonUtils.uploadFile(file));
+    @PostMapping("/work/key")
+    public ResponseResult getKey() {
+        return ResponseResult.success().body(activityService.getKey());
     }
 
     /**
@@ -111,7 +119,7 @@ public class ActivityController {
      */
     @PostMapping("/score/add")
     public ResponseResult addScore(@RequestBody @Validated ScoreInVM scoreInVM) {
-        activityService.addScore(scoreInVM);
+        activityService.addScore(currentUserUtils.getCurrUserId(), scoreInVM);
         return ResponseResult.success();
     }
 
@@ -132,6 +140,44 @@ public class ActivityController {
                 result.put("result", "欢迎参加年会，这是默认回答");
         }
         return ResponseResult.success().body(result);
+    }
+
+    /**
+     * 作品审核
+     *
+     * @param
+     * @return
+     */
+    @PatchMapping("/work/examine/{workId}/{state}")
+    public ResponseResult examine(@PathVariable("workId") Long workId,
+                                  @PathVariable("state") Integer state) {
+        activityService.examineWork(workId, state);
+        return ResponseResult.success();
+    }
+
+
+    /**
+     * 查询用户列表
+     *
+     * @param userQueryParams
+     * @return
+     */
+    @GetMapping("/user/list")
+    public ResponseResult getUserList(UserQueryParams userQueryParams,
+                                      @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_OFFSET) int offset,
+                                      @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_SIZE) int limit) {
+        List<UserInfoVM> result = activityService.getUserList(userQueryParams, offset, limit);
+        return ResponseResult.success().body(result);
+    }
+
+    /**
+     * 查询用户信息
+     *
+     * @return
+     */
+    @GetMapping("/user/{userId}")
+    public ResponseResult userInfo(@PathVariable("userId") Long userId) {
+        return ResponseResult.success().body(activityService.getUserInfo(userId));
     }
 
 }

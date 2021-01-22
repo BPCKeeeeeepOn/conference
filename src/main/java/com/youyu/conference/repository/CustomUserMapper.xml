@@ -8,6 +8,7 @@
     <result column="user_city" jdbcType="VARCHAR" property="userCity" />
     <result column="user_country" jdbcType="INTEGER" property="userCountry" />
     <result column="enabled" jdbcType="BIT" property="enabled" />
+    <result column="login_state" jdbcType="BIT" property="loginState" />
     <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
     <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
@@ -71,8 +72,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, user_name, user_number, user_city, user_country, enabled, created_time, updated_time, 
-    is_deleted
+    id, user_name, user_number, user_city, user_country, enabled, login_state, created_time, 
+    updated_time, is_deleted
   </sql>
   <select id="selectByExample" parameterType="com.youyu.conference.entity.CustomUserExample" resultMap="BaseResultMap">
     select
@@ -107,12 +108,12 @@
   <insert id="insert" parameterType="com.youyu.conference.entity.CustomUser">
     insert into custom_user (id, user_name, user_number, 
       user_city, user_country, enabled, 
-      created_time, updated_time, is_deleted
-      )
+      login_state, created_time, updated_time, 
+      is_deleted)
     values (#{id,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{userNumber,jdbcType=VARCHAR}, 
       #{userCity,jdbcType=VARCHAR}, #{userCountry,jdbcType=INTEGER}, #{enabled,jdbcType=BIT}, 
-      #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=BIT}
-      )
+      #{loginState,jdbcType=BIT}, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, 
+      #{isDeleted,jdbcType=BIT})
   </insert>
   <insert id="insertSelective" parameterType="com.youyu.conference.entity.CustomUser">
     insert into custom_user
@@ -134,6 +135,9 @@
       </if>
       <if test="enabled != null">
         enabled,
+      </if>
+      <if test="loginState != null">
+        login_state,
       </if>
       <if test="createdTime != null">
         created_time,
@@ -163,6 +167,9 @@
       </if>
       <if test="enabled != null">
         #{enabled,jdbcType=BIT},
+      </if>
+      <if test="loginState != null">
+        #{loginState,jdbcType=BIT},
       </if>
       <if test="createdTime != null">
         #{createdTime,jdbcType=TIMESTAMP},
@@ -202,6 +209,9 @@
       <if test="record.enabled != null">
         enabled = #{record.enabled,jdbcType=BIT},
       </if>
+      <if test="record.loginState != null">
+        login_state = #{record.loginState,jdbcType=BIT},
+      </if>
       <if test="record.createdTime != null">
         created_time = #{record.createdTime,jdbcType=TIMESTAMP},
       </if>
@@ -224,6 +234,7 @@
       user_city = #{record.userCity,jdbcType=VARCHAR},
       user_country = #{record.userCountry,jdbcType=INTEGER},
       enabled = #{record.enabled,jdbcType=BIT},
+      login_state = #{record.loginState,jdbcType=BIT},
       created_time = #{record.createdTime,jdbcType=TIMESTAMP},
       updated_time = #{record.updatedTime,jdbcType=TIMESTAMP},
       is_deleted = #{record.isDeleted,jdbcType=BIT}
@@ -249,6 +260,9 @@
       <if test="enabled != null">
         enabled = #{enabled,jdbcType=BIT},
       </if>
+      <if test="loginState != null">
+        login_state = #{loginState,jdbcType=BIT},
+      </if>
       <if test="createdTime != null">
         created_time = #{createdTime,jdbcType=TIMESTAMP},
       </if>
@@ -268,6 +282,7 @@
       user_city = #{userCity,jdbcType=VARCHAR},
       user_country = #{userCountry,jdbcType=INTEGER},
       enabled = #{enabled,jdbcType=BIT},
+      login_state = #{loginState,jdbcType=BIT},
       created_time = #{createdTime,jdbcType=TIMESTAMP},
       updated_time = #{updatedTime,jdbcType=TIMESTAMP},
       is_deleted = #{isDeleted,jdbcType=BIT}

@@ -1,9 +1,12 @@
 package com.youyu.conference.service;
 
 import com.github.pagehelper.PageHelper;
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.model.ciModel.snapshot.SnapshotRequest;
 import com.youyu.conference.common.GeneratorID;
 import com.youyu.conference.common.ResponseResult;
 import com.youyu.conference.common.ResultCode;
+import com.youyu.conference.config.TencentConfig;
 import com.youyu.conference.entity.*;
 import com.youyu.conference.exception.BizException;
 import com.youyu.conference.repository.UserEnrollWorkEventMapper;
@@ -14,6 +17,8 @@ import com.youyu.conference.repository.biz.ActivityUserBizMapper;
 import com.youyu.conference.utils.CurrentUserUtils;
 import com.youyu.conference.web.vm.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +36,11 @@ import java.util.stream.Collectors;
 
 import static com.youyu.conference.common.ConferenceConstants.EVENT_TYPE.EVENT_TYPE_3;
 import static com.youyu.conference.common.ConferenceConstants.EVENT_TYPE.EVENT_TYPE_DISC;
-import static com.youyu.conference.common.ConferenceConstants.USER_STATUS.DEFAULT_STATUS;
-import static com.youyu.conference.common.ConferenceConstants.USER_STATUS.PASS_STATUS;
+import static com.youyu.conference.common.ConferenceConstants.USER_STATUS.*;
 import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYPE_1;
 import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYPE_2;
+import static com.youyu.conference.utils.CommonUtils.PREFIX;
+import static com.youyu.conference.utils.CommonUtils.VIDEO_TYPE_DICT;
 
 @Service
 @Slf4j
@@ -64,6 +71,17 @@ public class ActivityService {
      */
     public UserInfoVM getUserInfo() {
         Long userId = currentUserUtils.getCurrUserId();
+        UserInfoVM userInfo = getUserInfo(userId);
+        return userInfo;
+    }
+
+    /**
+     * 获取用户信息(根据userId)
+     *
+     * @param userId
+     * @return
+     */
+    public UserInfoVM getUserInfo(Long userId) {
         UserInfoVM result = activityUserBizMapper.selectUserInfo(userId);
         if (Objects.nonNull(result)) {
             result.setScoreRecordList(selectScoreRecord(userId));
@@ -98,8 +116,25 @@ public class ActivityService {
      * @param workEnrollInVM
      */
     public void commitWork(WorkEnrollInVM workEnrollInVM) {
+        String workUrl = workEnrollInVM.getWorkUrl();
         long currUserId = currentUserUtils.getCurrUserId();
         UserEnrollWork record = workEnrollInVM.buildInsertRecord();
+        String suffixName = workUrl.substring(workUrl.lastIndexOf("."));
+        if (VIDEO_TYPE_DICT.contains(suffixName)) {
+            COSClient cc = TencentConfig.intiClient();
+            String headImgKey = StringUtils.join(PREFIX, File.separator, RandomStringUtils.randomAlphanumeric(32), ".jpg");
+            SnapshotRequest request = new SnapshotRequest();
+            //2.添加请求参数 参数详情请见api接口文档
+            request.setBucketName(TencentConfig.BUCKET_NAME);
+            request.getInput().setObject(workUrl);
+            request.getOutput().setBucket(TencentConfig.BUCKET_NAME);
+            request.getOutput().setRegion(TencentConfig.REGION_ID);
+            request.getOutput().setObject(headImgKey);
+            request.setTime("1");//视频第一秒
+            cc.generateSnapshot(request);
+            cc.shutdown();
+            record.setWorkHeadImg(headImgKey);
+        }
         record.setUserId(currUserId);
         Integer workType = workEnrollInVM.getWorkType();
         //验证
@@ -194,6 +229,17 @@ public class ActivityService {
     }
 
     /**
+     * 获取作品key
+     *
+     * @return
+     */
+    public Map<String, String> getKey() {
+        return new HashMap<String, String>() {{
+            put("key", StringUtils.join(PREFIX, File.separator, RandomStringUtils.randomAlphanumeric(32)));
+        }};
+    }
+
+    /**
      * 用户行为
      *
      * @param workId
@@ -224,7 +270,7 @@ public class ActivityService {
             ScoreInVM scoreInVM = new ScoreInVM();
             scoreInVM.setChannel("投票");
             scoreInVM.setScore(30);
-            addScore(scoreInVM);
+            addScore(receiveUserId, scoreInVM);
         }
         UserEnrollWorkEvent record = new UserEnrollWorkEvent();
         record.setEventType(event);
@@ -240,13 +286,53 @@ public class ActivityService {
      *
      * @param scoreInVM
      */
-    public void addScore(ScoreInVM scoreInVM) {
-        Long currUserId = currentUserUtils.getCurrUserId();
+    public void addScore(Long userId, ScoreInVM scoreInVM) {
         UserScoreRecord record = new UserScoreRecord();
         record.setId(GeneratorID.getId());
-        record.setUserId(currUserId);
+        record.setUserId(userId);
         record.setScore(scoreInVM.getScore());
         record.setScoreChannel(scoreInVM.getChannel());
         userScoreRecordMapper.insertSelective(record);
+    }
+
+    /**
+     * 审核作品
+     *
+     * @param id
+     * @param state
+     */
+    public void examineWork(Long id, Integer state) {
+        UserEnrollWork record = userEnrollWorkMapper.selectByPrimaryKey(id);
+        if (Objects.isNull(record)) {
+            throw new BizException(ResponseResult.fail(ResultCode.CODE1003));
+        }
+        if (!USER_STATUS.contains(state)) {
+            throw new BizException(ResponseResult.fail(ResultCode.PARAMS_ERROR));
+        }
+        Integer workType = record.getWorkType();
+        if (Objects.equals(workType, WORK_TYPE_1)) {//家的味道，新增100积分
+            ScoreInVM scoreInVM = new ScoreInVM();
+            scoreInVM.setChannel("参与家的味道");
+            scoreInVM.setScore(100);
+            addScore(record.getUserId(), scoreInVM);
+        }
+        record.setWorkStatus(state);
+        userEnrollWorkMapper.updateByPrimaryKeySelective(record);
+    }
+
+    /**
+     * 查询用户列表
+     *
+     * @param userQueryParams
+     * @return
+     */
+    public List<UserInfoVM> getUserList(UserQueryParams userQueryParams, int offset, int limit) {
+        PageHelper.offsetPage(offset, limit);
+        List<UserInfoVM> userInfoVMS = activityUserBizMapper.selectUserList(userQueryParams);
+        return userInfoVMS;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(StringUtils.join("tyson", File.separator, RandomStringUtils.randomAlphanumeric(32)));
     }
 }

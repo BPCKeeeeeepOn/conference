@@ -35,9 +35,9 @@ import java.util.stream.Stream;
 @Slf4j
 public class CommonUtils {
 
-    static Set<String> IMG_TYPE_DICT = Stream.of(".png", ".jpg", ".jpeg", ".gif").collect(Collectors.toSet());
-    static Set<String> VIDEO_TYPE_DICT = Stream.of(".mp4", ".mpeg4", ".m4v", ".mov").collect(Collectors.toSet());
-    private final static String PREFIX = "tyson";
+    public static Set<String> IMG_TYPE_DICT = Stream.of(".png", ".jpg", ".jpeg", ".gif").collect(Collectors.toSet());
+    public static Set<String> VIDEO_TYPE_DICT = Stream.of(".mp4", ".mpeg4", ".m4v", ".mov").collect(Collectors.toSet());
+    public final static String PREFIX = "tyson";
 
 
     public static int generateWorkerId() {

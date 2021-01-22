@@ -27,7 +27,7 @@ public interface ConferenceConstants {
         int DEFAULT_STATUS = 0; //待审核
         int PASS_STATUS = 10; //审核通过
         int CANCEL_STATUS = 20; //审核拒绝
-        Set<Integer> userStatus = Stream.of(DEFAULT_STATUS, PASS_STATUS, CANCEL_STATUS).collect(Collectors.toSet());
+        Set<Integer> USER_STATUS = Stream.of(DEFAULT_STATUS, PASS_STATUS, CANCEL_STATUS).collect(Collectors.toSet());
     }
 
     interface PRIZE_TYPE {

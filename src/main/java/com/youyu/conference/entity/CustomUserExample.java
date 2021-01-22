@@ -495,6 +495,66 @@ public class CustomUserExample {
             return (Criteria) this;
         }
 
+        public Criteria andLoginStateIsNull() {
+            addCriterion("login_state is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateIsNotNull() {
+            addCriterion("login_state is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateEqualTo(Boolean value) {
+            addCriterion("login_state =", value, "loginState");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateNotEqualTo(Boolean value) {
+            addCriterion("login_state <>", value, "loginState");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateGreaterThan(Boolean value) {
+            addCriterion("login_state >", value, "loginState");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("login_state >=", value, "loginState");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateLessThan(Boolean value) {
+            addCriterion("login_state <", value, "loginState");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateLessThanOrEqualTo(Boolean value) {
+            addCriterion("login_state <=", value, "loginState");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateIn(List<Boolean> values) {
+            addCriterion("login_state in", values, "loginState");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateNotIn(List<Boolean> values) {
+            addCriterion("login_state not in", values, "loginState");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateBetween(Boolean value1, Boolean value2) {
+            addCriterion("login_state between", value1, value2, "loginState");
+            return (Criteria) this;
+        }
+
+        public Criteria andLoginStateNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("login_state not between", value1, value2, "loginState");
+            return (Criteria) this;
+        }
+
         public Criteria andCreatedTimeIsNull() {
             addCriterion("created_time is null");
             return (Criteria) this;
