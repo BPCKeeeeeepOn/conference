@@ -10,14 +10,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-  
-    @Override  
+
+    @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")  
-                .allowedOrigins("*")  
+        registry.addMapping("/**")
+                .allowedOrigins("*")
                 .allowCredentials(true)
-                .allowedMethods("GET", "POST", "DELETE", "PUT")  
-                .maxAge(3600);  
+                .allowedMethods("GET", "POST", "DELETE", "PUT", "PATCH")
+                .maxAge(3600);
     }
 
     @Bean
@@ -29,5 +29,5 @@ public class WebConfig implements WebMvcConfigurer {
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
-    
+
 }

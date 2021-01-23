@@ -49,7 +49,7 @@ public class UserInfoVM {
         if (!CollectionUtils.isEmpty(scoreRecordList)) {
             return scoreRecordList.stream().mapToInt(ScoreDetailVM::getScore).sum(); //积分总和
         }
-        return score;
+        return Objects.isNull(score) ? NumberUtils.INTEGER_ZERO : score;
     }
 
     @Getter(name = "redpackCount")
@@ -57,7 +57,7 @@ public class UserInfoVM {
         if (!CollectionUtils.isEmpty(prizeRecordList)) {
             return prizeRecordList.stream().filter(item -> Objects.equals(item.getPrizeType(), PRIZE_REDPACK)).count();
         }
-        return redpackCount;
+        return Objects.isNull(redpackCount) ? NumberUtils.INTEGER_ZERO : redpackCount;
     }
 
     @Getter(name = "couponCount")
@@ -65,6 +65,6 @@ public class UserInfoVM {
         if (!CollectionUtils.isEmpty(prizeRecordList)) {
             return prizeRecordList.stream().filter(item -> Objects.equals(item.getPrizeType(), PRIZE_COUPON)).count();
         }
-        return couponCount;
+        return Objects.isNull(couponCount) ? NumberUtils.INTEGER_ZERO : couponCount;
     }
 }

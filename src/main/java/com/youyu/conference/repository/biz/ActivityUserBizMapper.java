@@ -18,7 +18,8 @@ public interface ActivityUserBizMapper {
 
     Long selectMyBillboard(@Param("userId") Long userId);
 
-    List<WorkEnrollListOutVM> selectWorkList(@Param("type") Integer type);
+    List<WorkEnrollListOutVM> selectWorkList(@Param("type") Integer type,
+                                             @Param("state") Integer state);
 
     List<UserInfoVM> selectUserList(@Param("queryParams") UserQueryParams userQueryParams);
 

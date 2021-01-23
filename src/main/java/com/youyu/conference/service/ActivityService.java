@@ -1,12 +1,9 @@
 package com.youyu.conference.service;
 
 import com.github.pagehelper.PageHelper;
-import com.qcloud.cos.COSClient;
-import com.qcloud.cos.model.ciModel.snapshot.SnapshotRequest;
 import com.youyu.conference.common.GeneratorID;
 import com.youyu.conference.common.ResponseResult;
 import com.youyu.conference.common.ResultCode;
-import com.youyu.conference.config.TencentConfig;
 import com.youyu.conference.entity.*;
 import com.youyu.conference.exception.BizException;
 import com.youyu.conference.repository.UserEnrollWorkEventMapper;
@@ -19,15 +16,14 @@ import com.youyu.conference.web.vm.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,15 +32,16 @@ import java.util.stream.Collectors;
 
 import static com.youyu.conference.common.ConferenceConstants.EVENT_TYPE.EVENT_TYPE_3;
 import static com.youyu.conference.common.ConferenceConstants.EVENT_TYPE.EVENT_TYPE_DISC;
-import static com.youyu.conference.common.ConferenceConstants.USER_STATUS.*;
+import static com.youyu.conference.common.ConferenceConstants.USER_STATUS.USER_STATUS;
 import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYPE_1;
-import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYPE_2;
 import static com.youyu.conference.utils.CommonUtils.PREFIX;
-import static com.youyu.conference.utils.CommonUtils.VIDEO_TYPE_DICT;
 
 @Service
 @Slf4j
 public class ActivityService {
+
+    @Autowired
+    public ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private CurrentUserUtils currentUserUtils;
@@ -110,67 +107,9 @@ public class ActivityService {
         }};
     }
 
-    /**
-     * 提交作品
-     *
-     * @param workEnrollInVM
-     */
-    public void commitWork(WorkEnrollInVM workEnrollInVM) {
-        String workUrl = workEnrollInVM.getWorkUrl();
+    public void handlerCommitWork(WorkEnrollInVM workEnrollInVM) {
         long currUserId = currentUserUtils.getCurrUserId();
-        UserEnrollWork record = workEnrollInVM.buildInsertRecord();
-        String suffixName = workUrl.substring(workUrl.lastIndexOf("."));
-        if (VIDEO_TYPE_DICT.contains(suffixName)) {
-            COSClient cc = TencentConfig.intiClient();
-            String headImgKey = StringUtils.join(PREFIX, File.separator, RandomStringUtils.randomAlphanumeric(32), ".jpg");
-            SnapshotRequest request = new SnapshotRequest();
-            //2.添加请求参数 参数详情请见api接口文档
-            request.setBucketName(TencentConfig.BUCKET_NAME);
-            request.getInput().setObject(workUrl);
-            request.getOutput().setBucket(TencentConfig.BUCKET_NAME);
-            request.getOutput().setRegion(TencentConfig.REGION_ID);
-            request.getOutput().setObject(headImgKey);
-            request.setTime("1");//视频第一秒
-            cc.generateSnapshot(request);
-            cc.shutdown();
-            record.setWorkHeadImg(headImgKey);
-        }
-        record.setUserId(currUserId);
-        Integer workType = workEnrollInVM.getWorkType();
-        //验证
-        UserEnrollWorkExample example = new UserEnrollWorkExample();
-        if (Objects.equals(WORK_TYPE_1, workType)) {
-            example.clear();
-            example.createCriteria().andUserIdEqualTo(currUserId).andWorkTypeEqualTo(WORK_TYPE_1).andIsDeletedEqualTo(false);
-            List<UserEnrollWork> userEnrollWorks1 = userEnrollWorkMapper.selectByExample(example);
-            if (!CollectionUtils.isEmpty(userEnrollWorks1)) {
-                UserEnrollWork userEnrollWork1 = userEnrollWorks1.get(NumberUtils.INTEGER_ZERO);
-                if (Objects.equals(userEnrollWork1.getWorkStatus(), PASS_STATUS) || Objects.equals(userEnrollWork1.getWorkStatus(), DEFAULT_STATUS)) {
-                    throw new BizException(ResponseResult.fail(ResultCode.CODE1001));
-                } else {
-                    record.setId(userEnrollWork1.getId());
-                    userEnrollWorkMapper.updateByPrimaryKey(record);
-                    return;
-                }
-            }
-            record.setId(GeneratorID.getId());
-        }
-        if ((Objects.equals(WORK_TYPE_2, workType))) {
-            example.clear();
-            example.createCriteria().andUserIdEqualTo(currUserId).andWorkTypeEqualTo(WORK_TYPE_2).andIsDeletedEqualTo(false);
-            example.setOrderByClause(" created_time desc");
-            List<UserEnrollWork> userEnrollWorks2 = userEnrollWorkMapper.selectByExample(example);
-            if (!CollectionUtils.isEmpty(userEnrollWorks2)) {
-                LocalDateTime now = LocalDateTime.now();
-                //获取最近一次上传作品的时间
-                LocalDateTime createdTime = userEnrollWorks2.get(NumberUtils.INTEGER_ZERO).getCreatedTime();
-                if (now.isAfter(createdTime)) { //对比时间
-                    throw new BizException(ResponseResult.fail(ResultCode.CODE1009));
-                }
-            }
-        }
-        record.setId(GeneratorID.getId());
-        userEnrollWorkMapper.insertSelective(record);
+        eventPublisher.publishEvent(new ReportDataEvent(this, workEnrollInVM, currUserId));
     }
 
     /*
@@ -219,12 +158,12 @@ public class ActivityService {
      * @param type
      * @return
      */
-    public List<WorkEnrollListOutVM> getWorkList(Integer type, Integer offset, Integer limit) {
+    public List<WorkEnrollListOutVM> getWorkList(Integer type, Integer state, Integer offset, Integer limit) {
         if (!EVENT_TYPE_DISC.contains(type)) {
             throw new BizException(ResponseResult.fail(ResultCode.PARAMS_ERROR));
         }
         PageHelper.offsetPage(offset, limit);
-        List<WorkEnrollListOutVM> result = activityUserBizMapper.selectWorkList(type);
+        List<WorkEnrollListOutVM> result = activityUserBizMapper.selectWorkList(type,state);
         return result;
     }
 
@@ -332,7 +271,5 @@ public class ActivityService {
         return userInfoVMS;
     }
 
-    public static void main(String[] args) {
-        System.out.println(StringUtils.join("tyson", File.separator, RandomStringUtils.randomAlphanumeric(32)));
-    }
+
 }

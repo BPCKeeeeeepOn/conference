@@ -13,10 +13,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ExecutorConfig {
 
     /**
-     * 即时通信异步线程池
+     * 配置异步线程池
      * @return
      */
-    @Bean
+    @Bean(name = "asyncChatExecutor")
     public Executor asyncChatExecutor(){
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         //核心线程数

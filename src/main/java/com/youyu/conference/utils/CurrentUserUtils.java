@@ -3,6 +3,7 @@ package com.youyu.conference.utils;
 import com.youyu.conference.entity.CustomUser;
 import com.youyu.conference.service.cache.UserInfoCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 

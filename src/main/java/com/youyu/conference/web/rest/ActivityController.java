@@ -72,9 +72,10 @@ public class ActivityController {
      */
     @GetMapping("/work/list/{type}")
     public ResponseResult listWork(@PathVariable("type") Integer type,
+                                   @RequestParam(value = "state", required = false) Integer state,
                                    @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_OFFSET) int offset,
                                    @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_SIZE) int limit) {
-        return ResponseResult.success().body(activityService.getWorkList(type, offset, limit));
+        return ResponseResult.success().body(activityService.getWorkList(type,state, offset, limit));
     }
 
     /**
@@ -96,7 +97,7 @@ public class ActivityController {
      */
     @PostMapping("/work/commit")
     public ResponseResult commitWork(@Validated @RequestBody WorkEnrollInVM workEnrollInVM) {
-        activityService.commitWork(workEnrollInVM);
+        activityService.handlerCommitWork(workEnrollInVM);
         return ResponseResult.success();
     }
 
