@@ -1,9 +1,6 @@
 package com.youyu.conference.repository.biz;
 
-import com.youyu.conference.web.vm.ScoreBillboardVM;
-import com.youyu.conference.web.vm.UserInfoVM;
-import com.youyu.conference.web.vm.UserQueryParams;
-import com.youyu.conference.web.vm.WorkEnrollListOutVM;
+import com.youyu.conference.web.vm.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -22,5 +19,18 @@ public interface ActivityUserBizMapper {
                                              @Param("state") Integer state);
 
     List<UserInfoVM> selectUserList(@Param("queryParams") UserQueryParams userQueryParams);
+
+    List<PrizeDetailVM> selectPrizeList(@Param("prizeName") String prizeName,
+                                        @Param("prizeType") Integer prizeType,
+                                        @Param("userName") String userName,
+                                        @Param("userNumber") String userNumber);
+
+    List<ScoreDetailVM> selectScoreList(@Param("userName") String userName,
+                                        @Param("userNumber") String userNumber);
+
+    List<DrawLuckVM> selectLuckList(@Param("drawType") Integer drawType,
+                                    @Param("round") Integer round,
+                                    @Param("userName") String userName,
+                                    @Param("userNumber") String userNumber);
 
 }

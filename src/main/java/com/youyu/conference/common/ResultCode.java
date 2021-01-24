@@ -71,7 +71,11 @@ public enum ResultCode {
 
     CODE1011(1011, "最多两次投票机会"),
 
-    CODE1013(1013, "不能给自己投票");
+    CODE1013(1013, "不能给自己投票"),
+    
+    CODE1015(1015, "抽奖最多10次"),
+
+    CODE1017(1017, "很遗憾，您未中奖");
 
 
     ResultCode(Integer code, String msg) {

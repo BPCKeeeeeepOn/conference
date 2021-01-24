@@ -1,18 +1,15 @@
 package com.youyu.conference.web.rest;
 
 import com.youyu.conference.common.ResponseResult;
+import com.youyu.conference.entity.CustomUser;
 import com.youyu.conference.service.ActivityService;
-import com.youyu.conference.utils.CommonUtils;
 import com.youyu.conference.utils.CurrentUserUtils;
-import com.youyu.conference.web.vm.ScoreInVM;
-import com.youyu.conference.web.vm.UserInfoVM;
-import com.youyu.conference.web.vm.UserQueryParams;
-import com.youyu.conference.web.vm.WorkEnrollInVM;
+import com.youyu.conference.web.vm.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -75,13 +72,12 @@ public class ActivityController {
                                    @RequestParam(value = "state", required = false) Integer state,
                                    @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_OFFSET) int offset,
                                    @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_SIZE) int limit) {
-        return ResponseResult.success().body(activityService.getWorkList(type,state, offset, limit));
+        return ResponseResult.success().body(activityService.getWorkList(type, state, offset, limit));
     }
 
     /**
      * 获取作品key
      *
-     * @param key
      * @return
      */
     @PostMapping("/work/key")
@@ -97,7 +93,7 @@ public class ActivityController {
      */
     @PostMapping("/work/commit")
     public ResponseResult commitWork(@Validated @RequestBody WorkEnrollInVM workEnrollInVM) {
-        activityService.handlerCommitWork(workEnrollInVM);
+        activityService.commitWork(workEnrollInVM);
         return ResponseResult.success();
     }
 
@@ -144,12 +140,36 @@ public class ActivityController {
     }
 
     /**
+     * 个人抽奖
+     *
+     * @param round
+     * @return
+     */
+    @PostMapping("/luck/personal/{round}")
+    public ResponseResult personalDrawLuck(@PathVariable("round") Integer round) {
+        return ResponseResult.success().body(activityService.personalDrawLuck(round));
+    }
+
+    @PostMapping("/luck/screen/{type}/{round}/{count}")
+    public ResponseResult screenDrawLuck(@PathVariable("type") Integer type,
+                                         @PathVariable("round") Integer round,
+                                         @PathVariable("count") Integer count,
+                                         @RequestBody(required = false) Map<String, String> params) {
+        String userCity = null;
+        if (!CollectionUtils.isEmpty(params)) {
+            userCity = params.getOrDefault("user_city", null);
+        }
+        List<CustomUser> customUsers = activityService.screenDrawLuck(type, round, count, userCity);
+        return ResponseResult.success().body(customUsers);
+    }
+
+    /**
      * 作品审核
      *
      * @param
      * @return
      */
-    @PatchMapping("/work/examine/{workId}/{state}")
+    @PostMapping("/work/examine/{workId}/{state}")
     public ResponseResult examine(@PathVariable("workId") Long workId,
                                   @PathVariable("state") Integer state) {
         activityService.examineWork(workId, state);
@@ -180,5 +200,46 @@ public class ActivityController {
     public ResponseResult userInfo(@PathVariable("userId") Long userId) {
         return ResponseResult.success().body(activityService.getUserInfo(userId));
     }
+
+    /**
+     * 查询奖品列表
+     */
+    @GetMapping("/prize/list")
+    public ResponseResult getPrizeList(@RequestParam(name = "prizeName", required = false) String prizeName,
+                                       @RequestParam(name = "prizeType", required = false) Integer prizeType,
+                                       @RequestParam(name = "userName", required = false) String userName,
+                                       @RequestParam(name = "userNumber", required = false) String userNumber,
+                                       @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_OFFSET) int offset,
+                                       @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_SIZE) int limit) {
+        List<PrizeDetailVM> prizeList = activityService.getPrizeList(prizeName, prizeType, userName, userNumber, offset, limit);
+        return ResponseResult.success().body(prizeList);
+    }
+
+    /**
+     * 查询积分列表
+     */
+    @GetMapping("/score/list")
+    public ResponseResult getScoreList(@RequestParam(name = "userName", required = false) String userName,
+                                       @RequestParam(name = "userNumber", required = false) String userNumber,
+                                       @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_OFFSET) int offset,
+                                       @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_SIZE) int limit) {
+        List<ScoreDetailVM> scoreList = activityService.getScoreList(userName, userNumber, offset, limit);
+        return ResponseResult.success().body(scoreList);
+    }
+
+    /**
+     * 查询大屏幕中奖记录
+     */
+    @GetMapping("/luck/list")
+    public ResponseResult getLuckList(@RequestParam(name = "drawType", required = false) Integer drawType,
+                                      @RequestParam(name = "drawRound", required = false) Integer drawRound,
+                                      @RequestParam(name = "userName", required = false) String userName,
+                                      @RequestParam(name = "userNumber", required = false) String userNumber,
+                                      @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_OFFSET) int offset,
+                                      @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_SIZE) int limit) {
+        List<DrawLuckVM> luckList = activityService.getLuckList(drawType, drawRound, userName, userNumber, offset, limit);
+        return ResponseResult.success().body(luckList);
+    }
+
 
 }

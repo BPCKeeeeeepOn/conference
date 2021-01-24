@@ -1,8 +1,15 @@
 package com.youyu.conference.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import static com.youyu.conference.common.ConferenceConstants.FULL_DATE_TIME;
+
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CustomUser implements Serializable {
     private Long id;
 
@@ -18,6 +25,7 @@ public class CustomUser implements Serializable {
 
     private Boolean loginState;
 
+    @JsonFormat(pattern = FULL_DATE_TIME)
     private LocalDateTime createdTime;
 
     private LocalDateTime updatedTime;

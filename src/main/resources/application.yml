@@ -4,7 +4,7 @@ spring:
   application:
     name: conference
   redis:
-    database: 0
+    database: 2
     port: 6379
     jedis:
       pool:

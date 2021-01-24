@@ -3,8 +3,10 @@ package com.youyu.conference;
 
 import com.youyu.conference.common.GeneratorID;
 import com.youyu.conference.entity.UserEnrollWork;
+import com.youyu.conference.entity.UserPrizeRecord;
 import com.youyu.conference.entity.UserScoreRecord;
 import com.youyu.conference.repository.UserEnrollWorkMapper;
+import com.youyu.conference.repository.UserPrizeRecordMapper;
 import com.youyu.conference.repository.UserScoreRecordMapper;
 import com.youyu.conference.repository.biz.ActivityUserBizMapper;
 import com.youyu.conference.web.vm.UserInfoVM;
@@ -34,6 +36,9 @@ public class CotenantApplicationTests {
     @Autowired
     private UserScoreRecordMapper userScoreRecordMapper;
 
+    @Autowired
+    private UserPrizeRecordMapper userPrizeRecordMapper;
+
     @Test
     public void testInsertWork() {
         List<UserInfoVM> userInfoVMS = activityUserBizMapper.selectUserList(new UserQueryParams());
@@ -43,9 +48,9 @@ public class CotenantApplicationTests {
             record.setUserId(item.getId());
             record.setId(GeneratorID.getId());
             record.setWorkDesc(RandomStringUtils.randomAlphanumeric(18));
-            record.setWorkType(RandomUtils.nextInt(1, 2));
-            record.setWorkHeadImg(RandomStringUtils.randomAlphanumeric(18));
-            record.setWorkUrl(RandomStringUtils.randomAlphanumeric(18));
+            record.setWorkType(2);
+            record.setWorkHeadImg("tyson/4l5y9Z1rYkEmZOGswu0NMbo6VHiCThU2.png");
+            record.setWorkUrl("tyson/AyopjzZX8bokRoLqs0lAWUlYmkVFeQ7y.mov");
             userEnrollWorkMapper.insertSelective(record);
         });
     }
@@ -63,8 +68,17 @@ public class CotenantApplicationTests {
         });
     }
 
-    public void testInsertEvent(){
-
+    @Test
+    public void testInsertPrize() {
+        List<UserInfoVM> userInfoVMS = activityUserBizMapper.selectUserList(new UserQueryParams());
+        userInfoVMS.stream().forEach(item -> {
+            UserPrizeRecord record = new UserPrizeRecord();
+            record.setId(GeneratorID.getId());
+            record.setPrizeName("2元");
+            record.setPrizeType(1);
+            record.setUserId(item.getId());
+            userPrizeRecordMapper.insertSelective(record);
+        });
     }
 }
 */

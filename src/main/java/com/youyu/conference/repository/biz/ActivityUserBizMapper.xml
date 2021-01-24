@@ -10,6 +10,8 @@
         <result column="work_status" jdbcType="INTEGER" property="workStatus"/>
         <result column="vote_count" jdbcType="INTEGER" property="voteCount"/>
         <result column="score" jdbcType="INTEGER" property="score"/>
+        <result column="redpack_count" jdbcType="INTEGER" property="redpackCount"/>
+        <result column="coupon_count" jdbcType="INTEGER" property="couponCount"/>
     </resultMap>
     <resultMap id="ScoreBillboardVM" type="com.youyu.conference.web.vm.ScoreBillboardVM">
         <id column="user_id" jdbcType="BIGINT" property="userId"/>
@@ -17,6 +19,16 @@
         <result column="user_number" jdbcType="VARCHAR" property="userNumber"/>
         <result column="score" jdbcType="INTEGER" property="score"/>
         <result column="rownum" jdbcType="INTEGER" property="rownum"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <resultMap id="ScoreDetailVM" type="com.youyu.conference.web.vm.ScoreDetailVM">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_number" jdbcType="VARCHAR" property="userNumber"/>
+        <result column="score" jdbcType="INTEGER" property="score"/>
+        <result column="score_channel" jdbcType="VARCHAR" property="scoreChannel"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
     </resultMap>
     <resultMap id="WorkListOutVM" type="com.youyu.conference.web.vm.WorkEnrollListOutVM">
         <id column="id" jdbcType="BIGINT" property="workId"/>
@@ -30,7 +42,27 @@
         <result column="work_like" jdbcType="INTEGER" property="workLike"/>
         <result column="work_vote" jdbcType="INTEGER" property="workVote"/>
         <result column="work_status" jdbcType="INTEGER" property="workStatus"/>
+    </resultMap>
 
+    <resultMap id="PrizeDetailVM" type="com.youyu.conference.web.vm.PrizeDetailVM">
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="prize_id" jdbcType="BIGINT" property="prizeId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_number" jdbcType="VARCHAR" property="userNumber"/>
+        <result column="prize_name" jdbcType="VARCHAR" property="prizeName"/>
+        <result column="prize_type" jdbcType="INTEGER" property="prizeType"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <resultMap id="DrawLuckVM" type="com.youyu.conference.web.vm.DrawLuckVM">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_number" jdbcType="VARCHAR" property="userNumber"/>
+        <result column="user_city" jdbcType="VARCHAR" property="userCity"/>
+        <result column="draw_type" jdbcType="VARCHAR" property="drawType"/>
+        <result column="draw_round" jdbcType="INTEGER" property="drawRound"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
     </resultMap>
 
     <select id="selectUserInfo" resultMap="UserInfoVM">
@@ -110,7 +142,9 @@
         SELECT cu.id, user_name, user_number, user_city, user_country
         , IFNULL(uew.work_status,30) AS work_status,
         (2-(SELECT COUNT(1) FROM user_enroll_work_event uewe WHERE uewe.send_user_id = cu.id AND uewe.event_type = 3))
-        AS vote_count,ifnull(t1.score,0) as score
+        AS vote_count,ifnull(t1.score,0) as score,
+        (select count(1) from user_prize_record where user_id = cu.id and prize_type = 1) as redpack_count,
+        (select count(1) from user_prize_record where user_id = cu.id and prize_type = 2) as coupon_count
         FROM custom_user cu
         LEFT JOIN (select sum(score) as score,user_id from user_score_record group by user_id) as t1
         ON cu.id = t1.user_id
@@ -132,5 +166,66 @@
             </if>
         </where>
         order by cu.created_time asc
+    </select>
+
+    <select id="selectPrizeList" resultMap="PrizeDetailVM">
+        select t1.id as prize_id,t2.id as
+        user_id,t2.user_name,t2.user_number,t1.prize_type,t1.prize_name,t1.created_time
+        from user_prize_record t1
+        inner join custom_user t2
+        on t1.user_id = t2.id
+        <where>
+            <if test="prizeType != null">
+                AND t1.prize_type = #{prizeType}
+            </if>
+            <if test="prizeName != null and prizeName != ''">
+                AND prize_name = #{prizeName}
+            </if>
+            <if test="userName != null and userName != ''">
+                AND t2.user_name = #{userName}
+            </if>
+            <if test="userNumber != null and userNumber != ''">
+                AND t2.user_number = #{userNumber}
+            </if>
+        </where>
+        order by t1.created_time desc
+    </select>
+
+    <select id="selectScoreList" resultMap="ScoreDetailVM">
+        select t2.id,t2.user_name,t2.user_number,t1.score,t1.score_channel,t1.created_time
+        from user_score_record t1
+        inner join custom_user t2
+        on t1.user_id = t2.id
+        <where>
+            <if test="userName != null and userName != ''">
+                AND t2.user_name = #{userName}
+            </if>
+            <if test="userNumber != null and userNumber != ''">
+                AND t2.user_number = #{userNumber}
+            </if>
+        </where>
+        order by t1.created_time desc
+    </select>
+
+    <select id="selectLuckList" resultMap="DrawLuckVM">
+        select t1.id,t2.id as user_id,t2.user_name,t2.user_number,t2.user_city,t1.draw_type,t1.draw_round,t1.created_time
+        from user_draw_record t1
+        inner join custom_user t2
+        on t1.user_id = t2.id
+        <where>
+            <if test="drawType != null">
+                AND t1.draw_type = #{drawType}
+            </if>
+            <if test="round != null">
+                AND t1.draw_round = #{round}
+            </if>
+            <if test="userName != null and userName != ''">
+                AND t2.user_name = #{userName}
+            </if>
+            <if test="userNumber != null and userNumber != ''">
+                AND t2.user_number = #{userNumber}
+            </if>
+        </where>
+        order by t1.created_time desc
     </select>
 </mapper>
