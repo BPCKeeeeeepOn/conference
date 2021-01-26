@@ -264,7 +264,7 @@ public class CommonUtils {
 
             // 这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的具体路径，例子：a.jpg 或者 a/* 或者 * 。
             // 如果填写了“*”，将允许用户访问所有资源；除非业务需要，否则请按照最小权限原则授予用户相应的访问权限范围。
-            config.put("allowPrefix", "tyson/");
+            config.put("allowPrefix", "tyson/*");
 
             // 密钥的权限列表。简单上传、表单上传和分片上传需要以下的权限，其他权限列表请看 https://cloud.tencent.com/document/product/436/31923
             String[] allowActions = new String[]{
@@ -288,5 +288,9 @@ public class CommonUtils {
             log.error("no valid secret");
         }
         return credential;
+    }
+
+    public static void main(String[] args) {
+        getQcloudCredential();
     }
 }
