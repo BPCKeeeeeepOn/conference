@@ -1,7 +1,7 @@
 spring:
   datasource:
     hikari:
-      jdbc-url: jdbc:mysql://172.17.16.10:3306/conference?useUnicode=true&characterEncoding=utf8&useSSL=false
+      jdbc-url: jdbc:mysql://172.17.16.10:3306/conference?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
       username: conference
       password: conference_123
       driver-class-name: com.mysql.jdbc.Driver

@@ -467,12 +467,4 @@ public class ActivityService {
         List<DrawLuckVM> drawLuckVMS = activityUserBizMapper.selectLuckList(prizeType, round, userName, userNumber);
         return drawLuckVMS;
     }
-
-    public static void main(String[] args) {
-        LocalDateTime now = LocalDateTime.now().minusMinutes(10L);
-        System.out.println(now);
-        LocalDateTime time = LocalDateTime.of(2021, 1, 27, 14, 20, 10);
-        System.out.println(now.isBefore(time));
-    }
-
 }
