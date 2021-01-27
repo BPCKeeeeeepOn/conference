@@ -42,6 +42,7 @@
         <result column="work_like" jdbcType="INTEGER" property="workLike"/>
         <result column="work_vote" jdbcType="INTEGER" property="workVote"/>
         <result column="work_status" jdbcType="INTEGER" property="workStatus"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
     </resultMap>
 
     <resultMap id="PrizeDetailVM" type="com.youyu.conference.web.vm.PrizeDetailVM">
@@ -123,17 +124,27 @@
         , t1.work_type, t2.user_name, t1.work_status,t1.created_time,
         (select count(1) from user_enroll_work_event where work_id = t1.id and event_type =1) as work_pv,
         (select count(1) from user_enroll_work_event where work_id = t1.id and event_type =2) as work_like,
-        (select count(1) from user_enroll_work_event where work_id = t1.id and event_type =3) as work_vote
+        (select count(1) from user_enroll_work_event where work_id = t1.id and event_type =3) as work_vote,
+        t1.created_time
         FROM user_enroll_work t1
         INNER JOIN custom_user t2 ON t1.user_id = t2.id
-        WHERE t1.work_type = #{type}
-        <if test="state != null">
-            AND t1.work_status = #{state}
+        WHERE 1=1
+        <if test="scene == 1">
+            AND t1.work_type = #{type}
+            <if test="state != null">
+                AND t1.work_status = #{state}
+            </if>
+            <if test="type == 1">
+                order by work_vote desc
+            </if>
+            <if test="type == 2">
+                order by t1.created_time desc
+            </if>
         </if>
-        <if test="type == 1">
-            order by work_vote desc
-        </if>
-        <if test="type == 2">
+        <if test="scene == 2">
+            <if test="state != null">
+                AND t1.work_status = #{state}
+            </if>
             order by t1.created_time desc
         </if>
     </select>
@@ -208,7 +219,8 @@
     </select>
 
     <select id="selectLuckList" resultMap="DrawLuckVM">
-        select t1.id,t2.id as user_id,t2.user_name,t2.user_number,t2.user_city,t1.draw_type,t1.draw_round,t1.created_time
+        select t1.id,t2.id as
+        user_id,t2.user_name,t2.user_number,t2.user_city,t1.draw_type,t1.draw_round,t1.created_time
         from user_draw_record t1
         inner join custom_user t2
         on t1.user_id = t2.id

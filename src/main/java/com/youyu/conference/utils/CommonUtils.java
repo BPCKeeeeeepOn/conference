@@ -81,56 +81,15 @@ public class CommonUtils {
         return 0;
     }
 
-
     /**
-     * 使用 Map按key进行排序
-     *
-     * @param map
+     * @param number 需要保留{scale}位数
      * @return
      */
-    public static Map<String, String> sortMapByKey(Map<String, String> map) {
-        if (map == null || map.isEmpty()) {
-            return null;
-        }
-
-        Map<String, String> sortMap = new TreeMap<String, String>(
-                new MapKeyComparator());
-
-        sortMap.putAll(map);
-
-        return map;
-    }
-
-    /**
-     * 随机生成6位数
-     *
-     * @return
-     */
-    public static String randomNum() {
-        int num = (int) ((Math.random() * 9 + 1) * 100000);
-        return String.valueOf(num);
-    }
-
-    /**
-     * @param number 需要保留两位的数
-     * @return
-     */
-    public static double doubleFormat(double number) {
+    public static double doubleFormat(double number, int scale) {
         // 将double类型转为BigDecimal
         BigDecimal bigDecimal = new BigDecimal(number);
         // 保留两位小数,并且四舍五入
-        return bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-    }
-
-    /**
-     * @param number 需要保留五位的数
-     * @return
-     */
-    public static double doubleFormat5(double number) {
-        // 将double类型转为BigDecimal
-        BigDecimal bigDecimal = new BigDecimal(number);
-        // 保留两位小数,并且四舍五入
-        return bigDecimal.setScale(5, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return bigDecimal.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**

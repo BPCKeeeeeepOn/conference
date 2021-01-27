@@ -50,9 +50,33 @@ public class HandlerService {
     @Async("asyncChatExecutor")
     @EventListener(classes = EnrollWorkDataEvent.class)
     public void commitWork(EnrollWorkDataEvent event) {
+        Integer recordType = event.getRecordType();
         UserEnrollWork record = event.getRecord();
-        record.setId(GeneratorID.getId());
-        userEnrollWorkMapper.insertSelective(record);
+        String workUrl = record.getWorkUrl();
+        String suffixName = workUrl.substring(workUrl.lastIndexOf("."));
+        if (VIDEO_TYPE_DICT.contains(suffixName)) {
+            COSClient cc = TencentConfig.intiClient();
+            String headImgKey = StringUtils.join(PREFIX, File.separator, RandomStringUtils.randomAlphanumeric(32), ".jpg");
+            SnapshotRequest request = new SnapshotRequest();
+            //2.添加请求参数 参数详情请见api接口文档
+            request.setBucketName(TencentConfig.BUCKET_NAME);
+            request.getInput().setObject(workUrl);
+            request.getOutput().setBucket(TencentConfig.BUCKET_NAME);
+            request.getOutput().setRegion(TencentConfig.REGION_ID);
+            request.getOutput().setObject(headImgKey);
+            request.setTime("1");//视频第一秒
+            cc.generateSnapshot(request);
+            cc.shutdown();
+            record.setWorkHeadImg(headImgKey);
+        }
+        if (Objects.equals(recordType, NumberUtils.INTEGER_ONE)) {
+            record.setId(GeneratorID.getId());
+            userEnrollWorkMapper.insertSelective(record);
+        }
+        if (Objects.equals(recordType, NumberUtils.INTEGER_TWO)) {
+            userEnrollWorkMapper.updateByPrimaryKeySelective(record);
+        }
+
     }
 
     @Async("asyncChatExecutor")

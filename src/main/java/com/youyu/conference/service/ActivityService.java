@@ -1,13 +1,10 @@
 package com.youyu.conference.service;
 
 import com.github.pagehelper.PageHelper;
-import com.qcloud.cos.COSClient;
-import com.qcloud.cos.model.ciModel.snapshot.SnapshotRequest;
 import com.youyu.conference.common.GeneratorID;
 import com.youyu.conference.common.PrizeConfig;
 import com.youyu.conference.common.ResponseResult;
 import com.youyu.conference.common.ResultCode;
-import com.youyu.conference.config.TencentConfig;
 import com.youyu.conference.entity.*;
 import com.youyu.conference.exception.BizException;
 import com.youyu.conference.repository.*;
@@ -16,7 +13,6 @@ import com.youyu.conference.utils.CommonUtils;
 import com.youyu.conference.utils.CurrentUserUtils;
 import com.youyu.conference.web.vm.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
@@ -28,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,10 +31,7 @@ import java.util.stream.Collectors;
 import static com.youyu.conference.common.ConferenceConstants.EVENT_TYPE.EVENT_TYPE_3;
 import static com.youyu.conference.common.ConferenceConstants.EVENT_TYPE.EVENT_TYPE_DISC;
 import static com.youyu.conference.common.ConferenceConstants.USER_STATUS.*;
-import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYPE_1;
-import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYPE_2;
-import static com.youyu.conference.utils.CommonUtils.PREFIX;
-import static com.youyu.conference.utils.CommonUtils.VIDEO_TYPE_DICT;
+import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.*;
 
 @Service
 @Slf4j
@@ -118,6 +110,11 @@ public class ActivityService {
         return scoreList;
     }
 
+    /**
+     * 我的排行榜
+     *
+     * @return
+     */
     public Map<String, Long> getMyBillboard() {
         long currUserId = currentUserUtils.getCurrUserId();
         Long round = activityUserBizMapper.selectMyBillboard(currUserId);
@@ -133,24 +130,7 @@ public class ActivityService {
      */
     public void commitWork(WorkEnrollInVM workEnrollInVM) {
         long currUserId = currentUserUtils.getCurrUserId();
-        String workUrl = workEnrollInVM.getWorkUrl();
         UserEnrollWork record = workEnrollInVM.buildInsertRecord();
-        String suffixName = workUrl.substring(workUrl.lastIndexOf("."));
-        if (VIDEO_TYPE_DICT.contains(suffixName)) {
-            COSClient cc = TencentConfig.intiClient();
-            String headImgKey = StringUtils.join(PREFIX, File.separator, RandomStringUtils.randomAlphanumeric(32), ".jpg");
-            SnapshotRequest request = new SnapshotRequest();
-            //2.添加请求参数 参数详情请见api接口文档
-            request.setBucketName(TencentConfig.BUCKET_NAME);
-            request.getInput().setObject(workUrl);
-            request.getOutput().setBucket(TencentConfig.BUCKET_NAME);
-            request.getOutput().setRegion(TencentConfig.REGION_ID);
-            request.getOutput().setObject(headImgKey);
-            request.setTime("1");//视频第一秒
-            cc.generateSnapshot(request);
-            cc.shutdown();
-            record.setWorkHeadImg(headImgKey);
-        }
         record.setUserId(currUserId);
         Integer workType = workEnrollInVM.getWorkType();
         //验证
@@ -165,7 +145,8 @@ public class ActivityService {
                     throw new BizException(ResponseResult.fail(ResultCode.CODE1001));
                 } else {
                     record.setId(userEnrollWork1.getId());
-                    userEnrollWorkMapper.updateByPrimaryKey(record);
+                    record.setWorkStatus(DEFAULT_STATUS);
+                    eventPublisher.publishEvent(new EnrollWorkDataEvent(this, NumberUtils.INTEGER_TWO, record, currUserId));
                     return;
                 }
             }
@@ -184,7 +165,7 @@ public class ActivityService {
                 }
             }
         }
-        eventPublisher.publishEvent(new EnrollWorkDataEvent(this, record, currUserId));
+        eventPublisher.publishEvent(new EnrollWorkDataEvent(this, NumberUtils.INTEGER_ONE, record, currUserId));
     }
 
     /*
@@ -233,12 +214,12 @@ public class ActivityService {
      * @param type
      * @return
      */
-    public List<WorkEnrollListOutVM> getWorkList(Integer type, Integer state, Integer offset, Integer limit) {
-        if (!EVENT_TYPE_DISC.contains(type)) {
+    public List<WorkEnrollListOutVM> getWorkList(Integer type, Integer state, Integer scene, Integer offset, Integer limit) {
+        if (!WORK_TYPE_DISC.contains(type)) {
             throw new BizException(ResponseResult.fail(ResultCode.PARAMS_ERROR));
         }
         PageHelper.offsetPage(offset, limit);
-        List<WorkEnrollListOutVM> result = activityUserBizMapper.selectWorkList(type, state);
+        List<WorkEnrollListOutVM> result = activityUserBizMapper.selectWorkList(type, state, scene);
         return result;
     }
 
@@ -401,13 +382,6 @@ public class ActivityService {
         return randomUserList;
     }
 
-    private Integer parseInteger(String count) {
-        if (StringUtils.isBlank(count)) {
-            return NumberUtils.INTEGER_ZERO;
-        }
-        return Integer.parseInt(count);
-    }
-
     /**
      * 审核作品
      *
@@ -420,6 +394,9 @@ public class ActivityService {
             throw new BizException(ResponseResult.fail(ResultCode.CODE1003));
         }
         if (!USER_STATUS.contains(state)) {
+            throw new BizException(ResponseResult.fail(ResultCode.PARAMS_ERROR));
+        }
+        if (!Objects.equals(DEFAULT_STATUS, record.getWorkStatus())) {
             throw new BizException(ResponseResult.fail(ResultCode.PARAMS_ERROR));
         }
         Integer workType = record.getWorkType();
@@ -489,6 +466,13 @@ public class ActivityService {
         PageHelper.offsetPage(offset, limit);
         List<DrawLuckVM> drawLuckVMS = activityUserBizMapper.selectLuckList(prizeType, round, userName, userNumber);
         return drawLuckVMS;
+    }
+
+    public static void main(String[] args) {
+        LocalDateTime now = LocalDateTime.now().minusMinutes(10L);
+        System.out.println(now);
+        LocalDateTime time = LocalDateTime.of(2021, 1, 27, 14, 20, 10);
+        System.out.println(now.isBefore(time));
     }
 
 }

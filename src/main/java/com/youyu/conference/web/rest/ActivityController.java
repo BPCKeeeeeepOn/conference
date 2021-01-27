@@ -70,9 +70,10 @@ public class ActivityController {
     @GetMapping("/work/list/{type}")
     public ResponseResult listWork(@PathVariable("type") Integer type,
                                    @RequestParam(value = "state", required = false) Integer state,
+                                   @RequestParam(value = "scene", required = false, defaultValue = "1") Integer scene,
                                    @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_OFFSET) int offset,
                                    @RequestParam(required = false, defaultValue = "" + DEFAULT_PAGE_SIZE) int limit) {
-        return ResponseResult.success().body(activityService.getWorkList(type, state, offset, limit));
+        return ResponseResult.success().body(activityService.getWorkList(type, state, scene, offset, limit));
     }
 
     /**
