@@ -124,7 +124,7 @@ public class CommonUtils {
         }
         HashMap<String, String> result = new HashMap<>();
         String fileName = file.getOriginalFilename();
-        String suffixName = fileName.substring(fileName.lastIndexOf("."));
+        String suffixName = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
         String contentType = file.getContentType();
         Long size = file.getSize();
         if (!IMG_TYPE_DICT.contains(suffixName) && !VIDEO_TYPE_DICT.contains(suffixName)) {

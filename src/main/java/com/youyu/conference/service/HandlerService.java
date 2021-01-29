@@ -4,16 +4,11 @@ import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.ciModel.snapshot.SnapshotRequest;
 import com.youyu.conference.common.GeneratorID;
 import com.youyu.conference.common.PrizeConfig;
-import com.youyu.conference.common.ResponseResult;
-import com.youyu.conference.common.ResultCode;
 import com.youyu.conference.config.TencentConfig;
 import com.youyu.conference.entity.UserEnrollWork;
-import com.youyu.conference.entity.UserEnrollWorkExample;
 import com.youyu.conference.entity.UserPrizeRecord;
-import com.youyu.conference.exception.BizException;
 import com.youyu.conference.repository.UserEnrollWorkMapper;
 import com.youyu.conference.repository.UserPrizeRecordMapper;
-import com.youyu.conference.web.vm.WorkEnrollInVM;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,15 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.io.File;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
-import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYPE_1;
-import static com.youyu.conference.common.ConferenceConstants.WORK_TYPE.WORK_TYPE_2;
 import static com.youyu.conference.utils.CommonUtils.PREFIX;
 import static com.youyu.conference.utils.CommonUtils.VIDEO_TYPE_DICT;
 
@@ -53,7 +43,7 @@ public class HandlerService {
         Integer recordType = event.getRecordType();
         UserEnrollWork record = event.getRecord();
         String workUrl = record.getWorkUrl();
-        String suffixName = workUrl.substring(workUrl.lastIndexOf("."));
+        String suffixName = workUrl.substring(workUrl.lastIndexOf(".")).toLowerCase();
         if (VIDEO_TYPE_DICT.contains(suffixName)) {
             COSClient cc = TencentConfig.intiClient();
             String headImgKey = StringUtils.join(PREFIX, File.separator, RandomStringUtils.randomAlphanumeric(32), ".jpg");

@@ -32,6 +32,8 @@ public class UserInfoVM {
 
     private Integer workStatus; //作品审核 0:待审核 10:审核通过 20:审核拒绝 30:未上传作品
 
+    private Integer workBrilliantStatus; //精彩瞬间 0:不可上传 1:可上传
+
     private Integer voteCount; //剩余投票次数
 
     private Integer score;

@@ -91,6 +91,21 @@ public class ActivityService {
      */
     public UserInfoVM getUserInfo(Long userId) {
         UserInfoVM result = activityUserBizMapper.selectUserInfo(userId);
+        Integer workBrilliantStatus = 0;
+        UserEnrollWorkExample example = new UserEnrollWorkExample();
+        example.clear();
+        example.createCriteria().andUserIdEqualTo(userId).andWorkTypeEqualTo(WORK_TYPE_2).andIsDeletedEqualTo(false);
+        example.setOrderByClause(" created_time desc");
+        List<UserEnrollWork> userEnrollWorks2 = userEnrollWorkMapper.selectByExample(example);
+        if (!CollectionUtils.isEmpty(userEnrollWorks2)) {
+            LocalDateTime now = LocalDateTime.now().minusMinutes(10L);
+            //获取最近一次上传作品的时间
+            LocalDateTime createdTime = userEnrollWorks2.get(NumberUtils.INTEGER_ZERO).getCreatedTime();
+            if (now.isBefore(createdTime)) { //对比时间
+                workBrilliantStatus = 1;
+            }
+        }
+        result.setWorkBrilliantStatus(workBrilliantStatus);
         if (Objects.nonNull(result)) {
             result.setScoreRecordList(selectScoreRecord(userId));
             result.setPrizeRecordList(selectPrizeRecord(userId));
@@ -264,7 +279,7 @@ public class ActivityService {
             ScoreInVM scoreInVM = new ScoreInVM();
             scoreInVM.setChannel("投票");
             scoreInVM.setScore(30);
-            addScore(receiveUserId, scoreInVM);
+            addScore(currUserId, scoreInVM);
         }
         UserEnrollWorkEvent record = new UserEnrollWorkEvent();
         record.setEventType(event);
@@ -346,7 +361,7 @@ public class ActivityService {
             CustomUserExample customUserExample = new CustomUserExample();
             customUserExample.createCriteria().andIdNotIn(CollectionUtils.isEmpty(userIds) ? new ArrayList<Long>() {{
                 add(NumberUtils.LONG_ZERO);
-            }} : userIds).andIsDeletedEqualTo(false);
+            }} : userIds).andEnabledEqualTo(true).andIsDeletedEqualTo(false);
             List<CustomUser> customUsers = customUserMapper.selectByExample(customUserExample);
             randomUserList = CommonUtils.getRandomList(customUsers, count);
 
@@ -396,15 +411,16 @@ public class ActivityService {
         if (!USER_STATUS.contains(state)) {
             throw new BizException(ResponseResult.fail(ResultCode.PARAMS_ERROR));
         }
-        if (!Objects.equals(DEFAULT_STATUS, record.getWorkStatus())) {
-            throw new BizException(ResponseResult.fail(ResultCode.PARAMS_ERROR));
-        }
         Integer workType = record.getWorkType();
-        if (Objects.equals(workType, WORK_TYPE_1)) {//家的味道，新增100积分
-            ScoreInVM scoreInVM = new ScoreInVM();
-            scoreInVM.setChannel("参与家的味道");
-            scoreInVM.setScore(100);
-            addScore(record.getUserId(), scoreInVM);
+        if (Objects.equals(workType, WORK_TYPE_1)) {
+            if (Objects.equals(PASS_STATUS, state)) {
+                if (Objects.equals(DEFAULT_STATUS, record.getWorkStatus())) {//家的味道,待审核->审核通过 增加积分
+                    ScoreInVM scoreInVM = new ScoreInVM();
+                    scoreInVM.setChannel("参与家的味道");
+                    scoreInVM.setScore(100);
+                    addScore(record.getUserId(), scoreInVM);
+                }
+            }
         }
         record.setWorkStatus(state);
         userEnrollWorkMapper.updateByPrimaryKeySelective(record);
@@ -467,4 +483,5 @@ public class ActivityService {
         List<DrawLuckVM> drawLuckVMS = activityUserBizMapper.selectLuckList(prizeType, round, userName, userNumber);
         return drawLuckVMS;
     }
+
 }

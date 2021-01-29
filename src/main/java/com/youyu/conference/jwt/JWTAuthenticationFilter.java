@@ -5,6 +5,7 @@ import com.youyu.conference.common.ResponseResult;
 import com.youyu.conference.common.ResultCode;
 import com.youyu.conference.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         if (!Objects.isNull(token) && token.startsWith("Bearer ")) {
             try {
                 authentication = JWTUtil.verifySign(token);
+                //取出userNumber
+                String userNumber = (String) authentication.getPrincipal();
+                //对比缓存token
+                String cacheToken = redisUtils.getCache(userNumber);
+
+                if (!StringUtils.equals(cacheToken, token.replace(JWTUtil.TOKEN_PREFIX, "").trim())) {
+                    throw new Exception();
+                }
 
                 refreshToken(token, authentication.getPrincipal().toString(), response);
 

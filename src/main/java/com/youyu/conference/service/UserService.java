@@ -1,6 +1,5 @@
 package com.youyu.conference.service;
 
-import com.youyu.conference.common.GeneratorID;
 import com.youyu.conference.entity.CustomUser;
 import com.youyu.conference.entity.CustomUserExample;
 import com.youyu.conference.repository.CustomUserMapper;

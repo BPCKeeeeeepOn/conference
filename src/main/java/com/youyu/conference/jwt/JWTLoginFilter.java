@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -92,7 +93,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
             response.setHeader("Authentication-Info", token);
 
             //保存在缓存中，用于后续刷新token
-            redisUtils.putCache(userName, token);
+            redisUtils.putCache(userName, token, JWTUtil.EXPIRATIONTIME / 1000, TimeUnit.SECONDS);
 
             response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseResult.success()));
         } catch (Exception e) {

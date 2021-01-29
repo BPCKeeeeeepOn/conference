@@ -27,7 +27,7 @@ public class JWTUtil {
     /**
      * 过期时间,单位毫秒
      */
-    private static final long EXPIRATIONTIME = 360 * 60 * 60 * 1000;
+    public static final long EXPIRATIONTIME = 360 * 60 * 60 * 1000;
 
     /**
      * 签名密钥
@@ -37,7 +37,7 @@ public class JWTUtil {
     /**
      * Token前缀
      */
-    private static final String TOKEN_PREFIX = "Bearer";
+    public static final String TOKEN_PREFIX = "Bearer";
 
     /**
      * 生成token
