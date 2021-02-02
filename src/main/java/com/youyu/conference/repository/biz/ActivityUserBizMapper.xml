@@ -158,7 +158,8 @@
         (select count(1) from user_prize_record where user_id = cu.id and prize_type = 1) as redpack_count,
         (select count(1) from user_prize_record where user_id = cu.id and prize_type = 2) as coupon_count
         FROM custom_user cu
-        LEFT JOIN (select sum(score) as score,user_id from user_score_record where is_deleted = 0 group by user_id) as t1
+        LEFT JOIN (select sum(score) as score,user_id from user_score_record where is_deleted = 0 group by user_id) as
+        t1
         ON cu.id = t1.user_id
         LEFT JOIN user_enroll_work uew
         ON cu.id = uew.user_id
@@ -209,7 +210,7 @@
         inner join custom_user t2
         on t1.user_id = t2.id
         <where>
-                AND t1.is_deleted = 0
+            AND t1.is_deleted = 0
             <if test="userName != null and userName != ''">
                 AND t2.user_name = #{userName}
             </if>
@@ -241,5 +242,8 @@
             </if>
         </where>
         order by t1.created_time desc
+    </select>
+    <select id="selectScoreSum" resultType="Integer">
+        select sum(score) from user_score_record where user_id = #{userId}
     </select>
 </mapper>

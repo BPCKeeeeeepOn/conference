@@ -51,13 +51,13 @@ public class CommonUtils {
         add(new PrizeConfig(6, generatePrizeKey("1_6"), 1, "2元", 10.0, 1340));
         add(new PrizeConfig(7, generatePrizeKey("1_7"), 1, "1元", 18.6, 4154));
 
-        add(new PrizeConfig(8, generatePrizeKey("2_1"), 2, "礼物1", 0.3, 67));
-        add(new PrizeConfig(9, generatePrizeKey("2_2"), 2, "礼物2", 0.6, 134));
-        add(new PrizeConfig(10, generatePrizeKey("2_3"), 2, "礼物3", 1.5, 335));
-        add(new PrizeConfig(11, generatePrizeKey("2_4"), 2, "礼物4", 3.0, 670));
-        add(new PrizeConfig(12, generatePrizeKey("2_5"), 2, "礼物5", 4.5, 1005));
-        add(new PrizeConfig(13, generatePrizeKey("2_6"), 2, "礼物6", 10.0, 1340));
-        add(new PrizeConfig(14, generatePrizeKey("2_7"), 2, "礼物7", 9.6, 2144));
+        add(new PrizeConfig(8, generatePrizeKey("2_1"), 2, "100元", 0.3, 67));
+        add(new PrizeConfig(9, generatePrizeKey("2_2"), 2, "50元", 0.6, 134));
+        add(new PrizeConfig(10, generatePrizeKey("2_3"), 2, "20元", 1.5, 335));
+        add(new PrizeConfig(11, generatePrizeKey("2_4"), 2, "10元", 3.0, 670));
+        add(new PrizeConfig(12, generatePrizeKey("2_5"), 2, "5元", 4.5, 1005));
+        add(new PrizeConfig(13, generatePrizeKey("2_6"), 2, "2元", 10.0, 1340));
+        add(new PrizeConfig(14, generatePrizeKey("2_7"), 2, "1元", 9.6, 2144));
 
     }};
 

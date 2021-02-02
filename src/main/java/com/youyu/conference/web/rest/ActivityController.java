@@ -199,7 +199,7 @@ public class ActivityController {
      */
     @GetMapping("/user/{userId}")
     public ResponseResult userInfo(@PathVariable("userId") Long userId) {
-        return ResponseResult.success().body(activityService.getUserInfo(userId));
+        return ResponseResult.success().body(activityService.getUserInfo(userId,2));
     }
 
     /**

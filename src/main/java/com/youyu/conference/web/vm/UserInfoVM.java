@@ -46,13 +46,13 @@ public class UserInfoVM {
 
     private List<PrizeDetailVM> prizeRecordList;
 
-    @Getter(name = "score")
+    /*@Getter(name = "score")
     public Integer getScore() {
         if (!CollectionUtils.isEmpty(scoreRecordList)) {
             return scoreRecordList.stream().mapToInt(ScoreDetailVM::getScore).sum(); //积分总和
         }
         return Objects.isNull(score) ? NumberUtils.INTEGER_ZERO : score;
-    }
+    }*/
 
     @Getter(name = "redpackCount")
     public Long getRedpackCount() {

@@ -79,7 +79,7 @@ public class ActivityService {
      */
     public UserInfoVM getUserInfo() {
         Long userId = currentUserUtils.getCurrUserId();
-        UserInfoVM userInfo = getUserInfo(userId);
+        UserInfoVM userInfo = getUserInfo(userId, 1);
         return userInfo;
     }
 
@@ -89,7 +89,7 @@ public class ActivityService {
      * @param userId
      * @return
      */
-    public UserInfoVM getUserInfo(Long userId) {
+    public UserInfoVM getUserInfo(Long userId, Integer type) {
         UserInfoVM result = activityUserBizMapper.selectUserInfo(userId);
         Integer workBrilliantStatus = 0;
         UserEnrollWorkExample example = new UserEnrollWorkExample();
@@ -107,7 +107,8 @@ public class ActivityService {
         }
         result.setWorkBrilliantStatus(workBrilliantStatus);
         if (Objects.nonNull(result)) {
-            result.setScoreRecordList(selectScoreRecord(userId));
+            result.setScore(activityUserBizMapper.selectScoreSum(userId));
+            result.setScoreRecordList(selectScoreRecord(userId, type));
             result.setPrizeRecordList(selectPrizeRecord(userId));
             return result;
         }
@@ -184,13 +185,17 @@ public class ActivityService {
     }
 
     /*
-    获取积分列表(个人)
+    获取积分列表(个人)前台
      */
-    public List<ScoreDetailVM> selectScoreRecord(Long userId) {
+    public List<ScoreDetailVM> selectScoreRecord(Long userId, Integer type) {
         UserScoreRecordExample example = new UserScoreRecordExample();
         example.clear();
         example.createCriteria().andUserIdEqualTo(userId).andIsDeletedEqualTo(false);
-        example.setOrderByClause(" created_time desc");
+        if (Objects.equals(type, 1)) {
+            example.setOrderByClause(" created_time desc limit 10");
+        } else {
+            example.setOrderByClause(" created_time desc");
+        }
         List<UserScoreRecord> userScoreRecords = userScoreRecordMapper.selectByExample(example);
         if (!CollectionUtils.isEmpty(userScoreRecords)) {
             List<ScoreDetailVM> result = userScoreRecords.stream().map(item -> {
@@ -373,7 +378,7 @@ public class ActivityService {
             CustomUserExample customUserExample = new CustomUserExample();
             customUserExample.createCriteria().andIdNotIn(CollectionUtils.isEmpty(userIds) ? new ArrayList<Long>() {{
                 add(NumberUtils.LONG_ZERO);
-            }} : userIds).andUserCityEqualTo(userCity).andIsDeletedEqualTo(false);
+            }} : userIds).andUserCityEqualTo(userCity).andEnabledEqualTo(true).andIsDeletedEqualTo(false);
             List<CustomUser> customUsers = customUserMapper.selectByExample(customUserExample);
             if (CollectionUtils.isEmpty(customUsers)) {
                 //如果没有用户，将从当前集群抽取所有用户

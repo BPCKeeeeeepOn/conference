@@ -34,4 +34,6 @@ public interface ActivityUserBizMapper {
                                     @Param("userName") String userName,
                                     @Param("userNumber") String userNumber);
 
+    Integer selectScoreSum(@Param("userId") Long userId);
+
 }
